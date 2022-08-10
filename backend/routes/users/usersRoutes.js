@@ -10,6 +10,8 @@ const {
   updateUserPasswordCtrl,
   followingUserCtrl,
   unfollowingUserCtrl,
+  blockUserCtrl,
+  unblockUserCtrl,
 } = require('../../controllers/users/usersCtrl');
 const {
   authMiddleware,
@@ -49,6 +51,12 @@ usersRoutes.put(
   checkMyToken,
   updateUserPasswordCtrl
 );
+
+// User Block
+usersRoutes.put('/block/:_id', authMiddleware, blockUserCtrl);
+
+// User Unblock
+usersRoutes.put('/unblock/:_id', authMiddleware, unblockUserCtrl);
 
 // User Delete
 usersRoutes.delete('/:_id', deleteUserCtrl);

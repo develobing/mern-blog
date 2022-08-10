@@ -70,7 +70,7 @@ const deleteUserCtrl = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc User Details
+ * @desc User details
  */
 const fetchUserDetailsCtrl = asyncHandler(async (req, res) => {
   const { _id } = req.params;
@@ -96,7 +96,7 @@ const userProfileCtrl = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc Update User Profile
+ * @desc Update user profile
  */
 const updateUserCtrl = asyncHandler(async (req, res) => {
   const { _id } = req?.params;
@@ -120,7 +120,7 @@ const updateUserCtrl = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc Update User Password
+ * @desc Update user password
  */
 const updateUserPasswordCtrl = asyncHandler(async (req, res) => {
   // Destructure the login user
@@ -142,7 +142,7 @@ const updateUserPasswordCtrl = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc User Following
+ * @desc User following
  */
 const followingUserCtrl = asyncHandler(async (req, res) => {
   const { followId } = req.body;
@@ -180,7 +180,7 @@ const followingUserCtrl = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc User Unfollowing
+ * @desc User unfollowing
  */
 const unfollowingUserCtrl = asyncHandler(async (req, res) => {
   const { unfollowId } = req.body;
@@ -208,6 +208,42 @@ const unfollowingUserCtrl = asyncHandler(async (req, res) => {
   res.json('You have successfully unfollowed the user');
 });
 
+/**
+ * @desc Block user
+ */
+const blockUserCtrl = asyncHandler(async (req, res) => {
+  const { _id } = req.params;
+  validateMongodbId(_id);
+
+  const user = await User.findByIdAndUpdate(
+    _id,
+    {
+      isBlocked: true,
+    },
+    { new: true }
+  );
+
+  res.json(user);
+});
+
+/**
+ * @desc Unblock user
+ */
+const unblockUserCtrl = asyncHandler(async (req, res) => {
+  const { _id } = req.params;
+  validateMongodbId(_id);
+
+  const user = await User.findByIdAndUpdate(
+    _id,
+    {
+      isBlocked: false,
+    },
+    { new: true }
+  );
+
+  res.json(user);
+});
+
 module.exports = {
   userRegisterCtrl,
   loginUserCtrl,
@@ -219,4 +255,6 @@ module.exports = {
   updateUserPasswordCtrl,
   followingUserCtrl,
   unfollowingUserCtrl,
+  blockUserCtrl,
+  unblockUserCtrl,
 };
