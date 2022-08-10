@@ -1,31 +1,25 @@
 require('dotenv').config();
 const express = require('express');
+const logger = require('morgan');
 const dbConnect = require('./config/db/dbConnect');
-const { userRegisterCtrl } = require('./controllers/users/usersCtrl');
+const usersRoutes = require('./routes/users/usersRoutes');
+const { errorHandler, notFound } = require('./middlewares/errorHandler');
 
 const app = express();
 
 // DB
 dbConnect();
 
+// Middlewares
 app.use(express.json());
+app.use(logger('dev'));
 
-// User Registered
-app.post('/api/users/register', userRegisterCtrl);
+// User Routes
+app.use('/api/users', usersRoutes);
 
-// User login
-app.post('/api/users/login', (req, res) => {
-  res.json({
-    user: 'User login successfully',
-  });
-});
-
-// User login
-app.get('/api/users', (req, res) => {
-  res.json({
-    user: 'Fetch users',
-  });
-});
+// Error Handler
+app.use(notFound);
+app.use(errorHandler);
 
 // Server
 const PORT = process.env.PORT || 5005;

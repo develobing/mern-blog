@@ -10,8 +10,8 @@ const dbConnect = async () => {
     });
 
     console.log('DB connected successfully!');
-  } catch (error) {
-    console.error(`DB connection error: ${error.message}`);
+  } catch (err) {
+    console.error(`DB connection error: ${err.message}`);
   }
 };
 
