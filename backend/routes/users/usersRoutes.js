@@ -1,5 +1,8 @@
 const express = require('express');
-const { userRegisterCtrl } = require('../../controllers/users/usersCtrl');
+const {
+  userRegisterCtrl,
+  loginUserCtrl,
+} = require('../../controllers/users/usersCtrl');
 
 const usersRoutes = express.Router();
 
@@ -7,11 +10,7 @@ const usersRoutes = express.Router();
 usersRoutes.post('/register', userRegisterCtrl);
 
 // User login
-usersRoutes.post('/login', (req, res) => {
-  res.json({
-    user: 'User login successfully',
-  });
-});
+usersRoutes.post('/login', loginUserCtrl);
 
 // User Fetch
 usersRoutes.get('/', (req, res) => {

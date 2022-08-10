@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bycrypt = require('bcryptjs');
 
 // Create Shchema
-const UserSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -118,14 +118,19 @@ const UserSchema = new mongoose.Schema(
 );
 
 // Hash password
-UserSchema.pre('save', async function () {
+userSchema.pre('save', async function () {
   if (this.isModified('password')) {
     const salt = await bycrypt.genSalt(10);
     this.password = await bycrypt.hash(this.password, salt);
   }
 });
 
+// Match password
+userSchema.methods.isPasswordMatched = async function (enteredPassword) {
+  return await bycrypt.compare(enteredPassword, this.password);
+};
+
 // Compile schema into a model
-const User = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
