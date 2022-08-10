@@ -8,6 +8,8 @@ const {
   userProfileCtrl,
   updateUserCtrl,
   updateUserPasswordCtrl,
+  followingUserCtrl,
+  unfollowingUserCtrl,
 } = require('../../controllers/users/usersCtrl');
 const {
   authMiddleware,
@@ -30,6 +32,12 @@ usersRoutes.get('/:_id', fetchUserDetailsCtrl);
 
 // User Profile
 usersRoutes.get('/profile/:_id', authMiddleware, checkMyToken, userProfileCtrl);
+
+// User Following
+usersRoutes.put('/follow', authMiddleware, followingUserCtrl);
+
+// User Unfollowing
+usersRoutes.put('/unfollow', authMiddleware, unfollowingUserCtrl);
 
 // User Update
 usersRoutes.put('/:_id', authMiddleware, checkMyToken, updateUserCtrl);

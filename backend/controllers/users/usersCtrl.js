@@ -1,4 +1,3 @@
-const { response } = require('express');
 const asyncHandler = require('express-async-handler');
 const generateToken = require('../../config/token/generateToken.js');
 const validateMongodbId = require('../../utils/validateMongodbId.js');
@@ -142,6 +141,73 @@ const updateUserPasswordCtrl = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @desc User Following
+ */
+const followingUserCtrl = asyncHandler(async (req, res) => {
+  const { followId } = req.body;
+  const loginUserId = req.user?._id;
+
+  // 1. Find the target user and check if the login id exist
+  const targetUser = await User.findById(followId);
+  const isAlreadyFollowing = targetUser.followers?.some(
+    (follower) => follower?.toString() === loginUserId?.toString()
+  );
+
+  if (isAlreadyFollowing)
+    throw new Error('You are already following this user');
+
+  // 2. Find the user you want to follow and update it's followers field
+  await User.findByIdAndUpdate(
+    followId,
+    {
+      $addToSet: { followers: loginUserId },
+      isFollowing: true,
+    },
+    { new: true }
+  );
+
+  // 3. Update the login user following field
+  await User.findByIdAndUpdate(
+    loginUserId,
+    {
+      $addToSet: { following: followId },
+    },
+    { new: true }
+  );
+
+  res.json('You have successfully followed the user');
+});
+
+/**
+ * @desc User Unfollowing
+ */
+const unfollowingUserCtrl = asyncHandler(async (req, res) => {
+  const { unfollowId } = req.body;
+  const loginUserId = req.user?._id;
+
+  if (!unfollowId) throw new Error('Unfollow Id is required');
+
+  await User.findByIdAndUpdate(
+    unfollowId,
+    {
+      $pull: { followers: loginUserId },
+      isFollowing: false,
+    },
+    { new: true }
+  );
+
+  await User.findByIdAndUpdate(
+    loginUserId,
+    {
+      $pull: { following: unfollowId },
+    },
+    { new: true }
+  );
+
+  res.json('You have successfully unfollowed the user');
+});
+
 module.exports = {
   userRegisterCtrl,
   loginUserCtrl,
@@ -151,4 +217,6 @@ module.exports = {
   userProfileCtrl,
   updateUserCtrl,
   updateUserPasswordCtrl,
+  followingUserCtrl,
+  unfollowingUserCtrl,
 };
