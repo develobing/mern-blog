@@ -259,18 +259,21 @@ const generateVerificationTokenCtrl = asyncHandler(async (req, res) => {
   // Save the user
   await loginUser.save();
 
-  const resetURL = `${process.env.FRONTEND_URL}/verify-account/${verificationToken}`;
-  const resetHtml = `If you were requested to veify your account, verify now within 10 minutes, otherwise ignore this email.<br/><br/> <a href="${resetURL}">Verify Account</a>`;
+  // Send email
+  const verifyURL = `${process.env.FRONTEND_URL}/verify-account/${verificationToken}`;
+  const verifyHtml = `If you were requested to veify your account, verify now within 10 minutes, otherwise ignore this email.<br/><br/> <a href="${verifyURL}">Verify Account</a>`;
 
   const msg = {
     to: 'develobing@gmail.com',
     subject: 'Account Verification',
-    html: resetHtml,
+    html: verifyHtml,
   };
 
   await sendEmail(msg);
 
-  res.json({ resetHtml });
+  if (process.env.NODE_ENV === 'development')
+    res.json({ verificationToken, verifyURL, verifyHtml });
+  else res.json({ msg: 'Email has sent' });
 });
 
 /**
@@ -278,8 +281,6 @@ const generateVerificationTokenCtrl = asyncHandler(async (req, res) => {
  */
 const accountVerificationCtrl = asyncHandler(async (req, res) => {
   const { token } = req.body;
-  if (!token) throw new Error('Token is required');
-
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
   // Find this user by token
@@ -293,11 +294,67 @@ const accountVerificationCtrl = asyncHandler(async (req, res) => {
   // Update the isVerified to true
   userFound.isAccountVerified = true;
   userFound.accountVerificationToken = undefined;
-  userFound.accountVerificationExpires = undefined;
+  userFound.accountVerificationTokenExpires = undefined;
 
   await userFound.save();
 
-  res.json({ userFound });
+  res.json({ msg: 'Account verified' });
+});
+
+/**
+ * @desc Generate password reset token
+ */
+const forgetPasswordTokenCtrl = asyncHandler(async (req, res) => {
+  // Find the user by email
+  const { email } = req.body;
+
+  const userFound = await User.findOne({ email });
+  if (!userFound) throw new Error('User not found');
+
+  // Generate token
+  const resetToken = await userFound.createPasswordResetToken();
+  await userFound.save();
+
+  // Send email
+  const resetURL = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+  const resetHtml = `If you were requested to reset your password, reset now within 10 minutes, otherwise ignore this email.<br/><br/> <a href="${resetURL}">Reset Password</a>`;
+
+  const msg = {
+    to: 'develobing@gmail.com',
+    subject: 'Reset your password',
+    html: resetHtml,
+  };
+
+  await sendEmail(msg);
+
+  if (process.env.NODE_ENV === 'development')
+    res.json({ resetToken, resetURL, resetHtml });
+  else res.json({ msg: 'Email has sent' });
+});
+
+/**
+ * @desc Password reset
+ */
+const passwordResetCtrl = asyncHandler(async (req, res) => {
+  const { token, password } = req.body;
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  // Find the user by token
+  const userFound = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!userFound) throw new Error('Invalid token');
+
+  // Update the password
+  userFound.password = password;
+  userFound.passwordResetToken = undefined;
+  userFound.passwordResetExpires = undefined;
+
+  await userFound.save();
+
+  res.json({ msg: 'Password reset' });
 });
 
 module.exports = {
@@ -316,4 +373,6 @@ module.exports = {
   generateVerificationTokenCtrl,
   accountVerificationCtrl,
   accountVerificationCtrl,
+  forgetPasswordTokenCtrl,
+  passwordResetCtrl,
 };

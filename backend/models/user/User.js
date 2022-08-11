@@ -132,7 +132,7 @@ userSchema.methods.isPasswordMatched = async function (enteredPassword) {
   return await bycrypt.compare(enteredPassword, this.password);
 };
 
-// Verify account
+// Verify account token
 userSchema.methods.createVerificationToken = async function () {
   // Create a token
   const verificationToken = crypto.randomBytes(32).toString('hex');
@@ -145,6 +145,21 @@ userSchema.methods.createVerificationToken = async function () {
   this.accountVerificationTokenExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
   return verificationToken;
+};
+
+// Password reset token
+userSchema.methods.createPasswordResetToken = async function () {
+  // Create a token
+  const passwordResetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(passwordResetToken)
+    .digest('hex');
+
+  this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+  return passwordResetToken;
 };
 
 // Compile schema into a model
