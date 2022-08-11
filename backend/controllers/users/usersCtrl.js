@@ -4,6 +4,7 @@ const validateMongodbId = require('../../utils/validateMongodbId.js');
 const User = require('../../models/user/User.js');
 const sendEmail = require('../../utils/sendEmail.js');
 const crypto = require('crypto');
+const cloudinaryUploadImage = require('../../utils/cloudinary.js');
 
 /**
  * @desc Register a new user
@@ -50,8 +51,6 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
  * @desc Fetch all users
  */
 const getAllUsersCtrl = asyncHandler(async (req, res) => {
-  console.log('req.headers: ', req.headers);
-
   const users = await User.find();
   res.json(users);
 });
@@ -357,6 +356,29 @@ const passwordResetCtrl = asyncHandler(async (req, res) => {
   res.json({ msg: 'Password reset' });
 });
 
+/**
+ * @desc Profile photo upload
+ */
+const profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
+  // 1. Get the path to image
+  const localPath = `public/images/profile/${req.file.filename}`;
+
+  // 2. Upload to cloudinary
+  const imgUploaded = await cloudinaryUploadImage(localPath);
+
+  // 3. Find the login user and update the profile photo
+  const loginUserId = req.user?._id;
+  await User.findByIdAndUpdate(
+    loginUserId,
+    {
+      profilePhoto: imgUploaded.url,
+    },
+    { new: true }
+  );
+
+  res.json({ imgUploaded, msg: 'Profile photo upload' });
+});
+
 module.exports = {
   userRegisterCtrl,
   loginUserCtrl,
@@ -375,4 +397,5 @@ module.exports = {
   accountVerificationCtrl,
   forgetPasswordTokenCtrl,
   passwordResetCtrl,
+  profilePhotoUploadCtrl,
 };

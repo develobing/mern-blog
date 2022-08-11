@@ -1,5 +1,12 @@
+# third party library
 node_modules
+
+# build output
 dist
 build
 
+# public assets
+public
+
+# environment variables
 .env

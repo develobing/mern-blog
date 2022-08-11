@@ -3,7 +3,7 @@ const express = require('express');
 const logger = require('morgan');
 const dbConnect = require('./config/db/dbConnect');
 const usersRoutes = require('./routes/users/usersRoutes');
-const { errorHandler, notFound } = require('./middlewares/errorHandler');
+const { errorHandler, notFound } = require('./middlewares/error/errorHandler');
 
 const app = express();
 

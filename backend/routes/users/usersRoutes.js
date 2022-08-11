@@ -16,11 +16,16 @@ const {
   accountVerificationCtrl,
   forgetPasswordTokenCtrl,
   passwordResetCtrl,
+  profilePhotoUploadCtrl,
 } = require('../../controllers/users/usersCtrl');
 const {
   authMiddleware,
   checkMyToken,
 } = require('../../middlewares/auth/authMiddleware');
+const {
+  profilePhotoUpload,
+  profilePhotoResize,
+} = require('../../middlewares/uploads/profilePhotoUpload');
 
 const usersRoutes = express.Router();
 
@@ -38,6 +43,15 @@ usersRoutes.get('/:_id', fetchUserDetailsCtrl);
 
 // User profile
 usersRoutes.get('/profile/:_id', authMiddleware, checkMyToken, userProfileCtrl);
+
+// User profile photo upload
+usersRoutes.put(
+  '/profile-photo',
+  authMiddleware,
+  profilePhotoUpload.single('image'),
+  profilePhotoResize,
+  profilePhotoUploadCtrl
+);
 
 // User verification token
 usersRoutes.post(
