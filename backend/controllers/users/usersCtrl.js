@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const generateToken = require('../../config/token/generateToken.js');
 const validateMongodbId = require('../../utils/validateMongodbId.js');
 const User = require('../../models/user/User.js');
+const sendEmail = require('../../utils/sendEmail.js');
 
 /**
  * @desc Register a new user
@@ -244,6 +245,21 @@ const unblockUserCtrl = asyncHandler(async (req, res) => {
   res.json(user);
 });
 
+/**
+ * @desc Account Verification - Send Email
+ */
+const generateVerificationTokenCtrl = asyncHandler(async (req, res) => {
+  const msg = {
+    to: 'develobing@gmail.com',
+    subject: 'Account Verification',
+    text: 'Please verify your account',
+  };
+
+  const result = await sendEmail(msg);
+
+  res.json({ result, text: 'Email sent' });
+});
+
 module.exports = {
   userRegisterCtrl,
   loginUserCtrl,
@@ -257,4 +273,5 @@ module.exports = {
   unfollowingUserCtrl,
   blockUserCtrl,
   unblockUserCtrl,
+  generateVerificationTokenCtrl,
 };

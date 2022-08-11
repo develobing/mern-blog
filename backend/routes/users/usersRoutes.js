@@ -12,6 +12,7 @@ const {
   unfollowingUserCtrl,
   blockUserCtrl,
   unblockUserCtrl,
+  generateVerificationTokenCtrl,
 } = require('../../controllers/users/usersCtrl');
 const {
   authMiddleware,
@@ -34,6 +35,9 @@ usersRoutes.get('/:_id', fetchUserDetailsCtrl);
 
 // User Profile
 usersRoutes.get('/profile/:_id', authMiddleware, checkMyToken, userProfileCtrl);
+
+// User Verification Token Send
+usersRoutes.post('/verify-token', generateVerificationTokenCtrl);
 
 // User Following
 usersRoutes.put('/follow', authMiddleware, followingUserCtrl);
