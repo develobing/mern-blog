@@ -13,6 +13,7 @@ const {
   blockUserCtrl,
   unblockUserCtrl,
   generateVerificationTokenCtrl,
+  accountVerificationCtrl,
 } = require('../../controllers/users/usersCtrl');
 const {
   authMiddleware,
@@ -21,34 +22,41 @@ const {
 
 const usersRoutes = express.Router();
 
-// User Registered
+// User registered
 usersRoutes.post('/register', userRegisterCtrl);
 
 // User login
 usersRoutes.post('/login', loginUserCtrl);
 
-// User All Fetch
+// User all fetch
 usersRoutes.get('/', authMiddleware, getAllUsersCtrl);
 
-// User Details Fetch
+// User details fetch
 usersRoutes.get('/:_id', fetchUserDetailsCtrl);
 
-// User Profile
+// User profile
 usersRoutes.get('/profile/:_id', authMiddleware, checkMyToken, userProfileCtrl);
 
-// User Verification Token Send
-usersRoutes.post('/verify-token', generateVerificationTokenCtrl);
+// User verification token
+usersRoutes.post(
+  '/verify-token',
+  authMiddleware,
+  generateVerificationTokenCtrl
+);
 
-// User Following
+// User account verification
+usersRoutes.put('/verify-account', authMiddleware, accountVerificationCtrl);
+
+// User following
 usersRoutes.put('/follow', authMiddleware, followingUserCtrl);
 
-// User Unfollowing
+// User unfollowing
 usersRoutes.put('/unfollow', authMiddleware, unfollowingUserCtrl);
 
-// User Update
+// User update
 usersRoutes.put('/:_id', authMiddleware, checkMyToken, updateUserCtrl);
 
-// User Password Update
+// User password update
 usersRoutes.put(
   '/password/:_id',
   authMiddleware,
@@ -56,13 +64,13 @@ usersRoutes.put(
   updateUserPasswordCtrl
 );
 
-// User Block
+// User block
 usersRoutes.put('/block/:_id', authMiddleware, blockUserCtrl);
 
-// User Unblock
+// User unblock
 usersRoutes.put('/unblock/:_id', authMiddleware, unblockUserCtrl);
 
-// User Delete
+// User delete
 usersRoutes.delete('/:_id', deleteUserCtrl);
 
 module.exports = usersRoutes;

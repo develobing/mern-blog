@@ -3,6 +3,7 @@ const generateToken = require('../../config/token/generateToken.js');
 const validateMongodbId = require('../../utils/validateMongodbId.js');
 const User = require('../../models/user/User.js');
 const sendEmail = require('../../utils/sendEmail.js');
+const crypto = require('crypto');
 
 /**
  * @desc Register a new user
@@ -246,18 +247,57 @@ const unblockUserCtrl = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc Account Verification - Send Email
+ * @desc Generate email Verification - Send Email
  */
 const generateVerificationTokenCtrl = asyncHandler(async (req, res) => {
+  const loginUserId = req.user?._id;
+  const loginUser = await User.findById(loginUserId);
+
+  // Generate token
+  const verificationToken = await loginUser.createVerificationToken();
+
+  // Save the user
+  await loginUser.save();
+
+  const resetURL = `${process.env.FRONTEND_URL}/verify-account/${verificationToken}`;
+  const resetHtml = `If you were requested to veify your account, verify now within 10 minutes, otherwise ignore this email.<br/><br/> <a href="${resetURL}">Verify Account</a>`;
+
   const msg = {
     to: 'develobing@gmail.com',
     subject: 'Account Verification',
-    text: 'Please verify your account',
+    html: resetHtml,
   };
 
-  const result = await sendEmail(msg);
+  await sendEmail(msg);
 
-  res.json({ result, text: 'Email sent' });
+  res.json({ resetHtml });
+});
+
+/**
+ * @desc Account Verification - Verify Email
+ */
+const accountVerificationCtrl = asyncHandler(async (req, res) => {
+  const { token } = req.body;
+  if (!token) throw new Error('Token is required');
+
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  // Find this user by token
+  const userFound = await User.findOne({
+    accountVerificationToken: hashedToken,
+    accountVerificationExpires: { $gt: Date.now() },
+  });
+
+  if (!userFound) throw new Error('Invalid token');
+
+  // Update the isVerified to true
+  userFound.isAccountVerified = true;
+  userFound.accountVerificationToken = undefined;
+  userFound.accountVerificationExpires = undefined;
+
+  await userFound.save();
+
+  res.json({ userFound });
 });
 
 module.exports = {
@@ -274,4 +314,6 @@ module.exports = {
   blockUserCtrl,
   unblockUserCtrl,
   generateVerificationTokenCtrl,
+  accountVerificationCtrl,
+  accountVerificationCtrl,
 };
