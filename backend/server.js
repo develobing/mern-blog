@@ -3,6 +3,7 @@ const express = require('express');
 const logger = require('morgan');
 const dbConnect = require('./config/db/dbConnect');
 const usersRoutes = require('./routes/users/usersRoutes');
+const postsRoutes = require('./routes/posts/postsRoutes');
 const { errorHandler, notFound } = require('./middlewares/error/errorHandler');
 
 const app = express();
@@ -14,8 +15,9 @@ dbConnect();
 app.use(express.json());
 app.use(logger('dev'));
 
-// User Routes
+// Routes
 app.use('/api/users', usersRoutes);
+app.use('/api/posts', postsRoutes);
 
 // Error Handler
 app.use(notFound);
