@@ -6,7 +6,35 @@ const validateMongodbId = require('../../utils/validateMongodbId');
 const User = require('../../models/user/User');
 const cloudinaryUploadImage = require('../../utils/cloudinary');
 
-const createPostCtrl = asyncHandler(async (req, res, next) => {
+/**
+ * @desc Fetch all posts
+ */
+const fetchPostsCtrl = asyncHandler(async (req, res) => {
+  const posts = await Post.find({}).sort({ createdAt: -1 }).populate('user');
+
+  res.json({ posts });
+});
+
+/**
+ * @desc Fetch a single post
+ */
+const fetchPostCtrl = asyncHandler(async (req, res) => {
+  const { _id } = req.params;
+  validateMongodbId(_id);
+
+  const post = await Post.findById(_id).populate('user');
+  if (!post) throw new Error(`Post not found with _id of ${_id}`, 404);
+
+  // Update number of views
+  await Post.findByIdAndUpdate(_id, { $inc: { numViews: 1 } }, { new: true });
+
+  res.json({ post });
+});
+
+/**
+ * @desc Create a post
+ */
+const createPostCtrl = asyncHandler(async (req, res) => {
   const authorId = req.body?.user;
   validateMongodbId(authorId);
 
@@ -41,4 +69,35 @@ const createPostCtrl = asyncHandler(async (req, res, next) => {
   fs.unlinkSync(localPath);
 });
 
-module.exports = { createPostCtrl };
+/**
+ * @desc Update a post
+ */
+const updatePost = asyncHandler(async (req, res) => {
+  const { _id } = req.params;
+  validateMongodbId(_id);
+
+  const post = await Post.findByIdAndUpdate(_id, req.body, { new: true });
+
+  res.json({ post });
+});
+
+/**
+ * @desc Delete a post
+ */
+const deletePost = asyncHandler(async (req, res) => {
+  const { _id } = req.params;
+  validateMongodbId(_id);
+
+  const post = await Post.findByIdAndDelete(_id);
+  if (!post) throw new Error(`Post not found with _id of ${_id}`);
+
+  res.json({ post, message: 'Post deleted' });
+});
+
+module.exports = {
+  fetchPostsCtrl,
+  fetchPostCtrl,
+  createPostCtrl,
+  updatePost,
+  deletePost,
+};

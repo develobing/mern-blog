@@ -93,7 +93,7 @@ const userProfileCtrl = asyncHandler(async (req, res) => {
   // Check if user _id is valid
   validateMongodbId(_id);
 
-  const myProfile = await User.findById(_id);
+  const myProfile = await User.findById(_id).populate('posts');
   res.json(myProfile);
 });
 
