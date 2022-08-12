@@ -6,6 +6,7 @@ const userRoutes = require('./routes/users/userRoutes');
 const postRoutes = require('./routes/posts/postRoutes');
 const commentRoutes = require('./routes/comments/commentRoutes');
 const emailRoutes = require('./routes/emails/emailRoutes');
+const categoryRoutes = require('./routes/categories/categoryRoutes');
 const { errorHandler, notFound } = require('./middlewares/error/errorHandler');
 
 const app = express();
@@ -22,6 +23,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/emails', emailRoutes);
+app.use('/api/categories', categoryRoutes);
 
 // Error Handler
 app.use(notFound);
