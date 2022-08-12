@@ -169,7 +169,6 @@ userSchema.methods.createPasswordResetToken = async function () {
   return passwordResetToken;
 };
 
-// Compile schema into a model
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

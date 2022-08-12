@@ -27,25 +27,25 @@ const {
   profilePhotoResize,
 } = require('../../middlewares/uploads/photoUpload');
 
-const usersRoutes = express.Router();
+const router = express.Router();
 
 // User registered
-usersRoutes.post('/register', userRegisterCtrl);
+router.post('/register', userRegisterCtrl);
 
 // User login
-usersRoutes.post('/login', loginUserCtrl);
+router.post('/login', loginUserCtrl);
 
 // User all fetch
-usersRoutes.get('/', authMiddleware, getAllUsersCtrl);
+router.get('/', authMiddleware, getAllUsersCtrl);
 
 // User details fetch
-usersRoutes.get('/:_id', fetchUserDetailsCtrl);
+router.get('/:_id', fetchUserDetailsCtrl);
 
 // User profile
-usersRoutes.get('/profile/:_id', authMiddleware, checkMyToken, userProfileCtrl);
+router.get('/profile/:_id', authMiddleware, checkMyToken, userProfileCtrl);
 
 // User profile photo upload
-usersRoutes.put(
+router.put(
   '/profile-photo',
   authMiddleware,
   photoUpload.single('image'),
@@ -54,32 +54,28 @@ usersRoutes.put(
 );
 
 // User verification token
-usersRoutes.post(
-  '/verify-token',
-  authMiddleware,
-  generateVerificationTokenCtrl
-);
+router.post('/verify-token', authMiddleware, generateVerificationTokenCtrl);
 
 // User account verification
-usersRoutes.put('/verify-account', authMiddleware, accountVerificationCtrl);
+router.put('/verify-account', authMiddleware, accountVerificationCtrl);
 
 // Forget password token
-usersRoutes.post('/forget-password', forgetPasswordTokenCtrl);
+router.post('/forget-password', forgetPasswordTokenCtrl);
 
 // Forget password token
-usersRoutes.put('/reset-password', passwordResetCtrl);
+router.put('/reset-password', passwordResetCtrl);
 
 // User following
-usersRoutes.put('/follow', authMiddleware, followingUserCtrl);
+router.put('/follow', authMiddleware, followingUserCtrl);
 
 // User unfollowing
-usersRoutes.put('/unfollow', authMiddleware, unfollowingUserCtrl);
+router.put('/unfollow', authMiddleware, unfollowingUserCtrl);
 
 // User update
-usersRoutes.put('/:_id', authMiddleware, checkMyToken, updateUserCtrl);
+router.put('/:_id', authMiddleware, checkMyToken, updateUserCtrl);
 
 // User password update
-usersRoutes.put(
+router.put(
   '/password/:_id',
   authMiddleware,
   checkMyToken,
@@ -87,12 +83,12 @@ usersRoutes.put(
 );
 
 // User block
-usersRoutes.put('/block/:_id', authMiddleware, blockUserCtrl);
+router.put('/block/:_id', authMiddleware, blockUserCtrl);
 
 // User unblock
-usersRoutes.put('/unblock/:_id', authMiddleware, unblockUserCtrl);
+router.put('/unblock/:_id', authMiddleware, unblockUserCtrl);
 
 // User delete
-usersRoutes.delete('/:_id', deleteUserCtrl);
+router.delete('/:_id', deleteUserCtrl);
 
-module.exports = usersRoutes;
+module.exports = router;

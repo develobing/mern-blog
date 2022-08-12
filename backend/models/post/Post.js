@@ -65,11 +65,10 @@ const postSchema = new mongoose.Schema(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-    timestamp: true,
+    timestamps: true,
   }
 );
 
-// Compile schema into a model
 const Post = mongoose.model('Post', postSchema);
 
 module.exports = Post;

@@ -5,6 +5,8 @@ const {
   createPostCtrl,
   updatePost,
   deletePost,
+  toggleLikePostCtrl,
+  toggleDislikePostCtrl,
 } = require('../../controllers/posts/postCtrl');
 const { authMiddleware } = require('../../middlewares/auth/authMiddleware');
 const {
@@ -31,6 +33,12 @@ router.post(
 
 // Update a post
 router.put('/:_id', authMiddleware, updatePost);
+
+// Like a post
+router.put('/:_id/likes', authMiddleware, toggleLikePostCtrl);
+
+// Like a post
+router.put('/:_id/dislikes', authMiddleware, toggleDislikePostCtrl);
 
 // Delete a post
 router.delete('/:_id', authMiddleware, deletePost);

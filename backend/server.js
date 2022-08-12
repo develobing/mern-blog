@@ -2,8 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const logger = require('morgan');
 const dbConnect = require('./config/db/dbConnect');
-const usersRoutes = require('./routes/users/usersRoutes');
-const postsRoutes = require('./routes/posts/postsRoutes');
+const userRoutes = require('./routes/users/userRoutes');
+const postRoutes = require('./routes/posts/postRoutes');
+const commentRoutes = require('./routes/comments/commentRoutes');
 const { errorHandler, notFound } = require('./middlewares/error/errorHandler');
 
 const app = express();
@@ -16,8 +17,9 @@ app.use(express.json());
 app.use(logger('dev'));
 
 // Routes
-app.use('/api/users', usersRoutes);
-app.use('/api/posts', postsRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/posts', postRoutes);
+app.use('/api/comments', commentRoutes);
 
 // Error Handler
 app.use(notFound);
