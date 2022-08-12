@@ -1,8 +1,10 @@
+const fs = require('fs');
 const asyncHandler = require('express-async-handler');
 const Filter = require('bad-words');
 const Post = require('../../models/post/Post');
 const validateMongodbId = require('../../utils/validateMongodbId');
 const User = require('../../models/user/User');
+const cloudinaryUploadImage = require('../../utils/cloudinary');
 
 const createPostCtrl = asyncHandler(async (req, res, next) => {
   const authorId = req.body?.user;
@@ -21,9 +23,22 @@ const createPostCtrl = asyncHandler(async (req, res, next) => {
     );
   }
 
-  const post = await Post.create(req.body);
+  // 1. Get the path to image
+  const localPath = `public/images/posts/${req.file.filename}`;
 
-  res.json({ post, isProfane });
+  // 2. Upload to cloudinary
+  const imgUploaded = await cloudinaryUploadImage(localPath);
+
+  const post = await Post.create({
+    ...req.body,
+    image: imgUploaded.url,
+    user: authorId,
+  });
+
+  res.json({ post });
+
+  // Remove upload image from local server
+  fs.unlinkSync(localPath);
 });
 
 module.exports = { createPostCtrl };

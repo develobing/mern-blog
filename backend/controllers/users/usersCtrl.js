@@ -1,3 +1,4 @@
+const fs = require('fs');
 const asyncHandler = require('express-async-handler');
 const generateToken = require('../../config/token/generateToken.js');
 const validateMongodbId = require('../../utils/validateMongodbId.js');
@@ -376,7 +377,10 @@ const profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
     { new: true }
   );
 
-  res.json({ imgUploaded, msg: 'Profile photo upload' });
+  res.json({ profileImage: imgUploaded.url, msg: 'Profile photo upload' });
+
+  // Remove upload image from local server
+  fs.unlinkSync(localPath);
 });
 
 module.exports = {

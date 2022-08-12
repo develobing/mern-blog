@@ -23,9 +23,9 @@ const {
   checkMyToken,
 } = require('../../middlewares/auth/authMiddleware');
 const {
-  profilePhotoUpload,
+  photoUpload,
   profilePhotoResize,
-} = require('../../middlewares/uploads/profilePhotoUpload');
+} = require('../../middlewares/uploads/photoUpload');
 
 const usersRoutes = express.Router();
 
@@ -48,7 +48,7 @@ usersRoutes.get('/profile/:_id', authMiddleware, checkMyToken, userProfileCtrl);
 usersRoutes.put(
   '/profile-photo',
   authMiddleware,
-  profilePhotoUpload.single('image'),
+  photoUpload.single('image'),
   profilePhotoResize,
   profilePhotoUploadCtrl
 );
