@@ -13,14 +13,19 @@ const cloudinaryUploadImage = require('../../utils/cloudinary.js');
 const userRegisterCtrl = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
 
-  const user = await User.create({
-    firstName,
-    lastName,
-    email,
-    password,
-  });
+  try {
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      password,
+    });
 
-  res.json(user);
+    res.json(user);
+  } catch (err) {
+    if (err?.code === 11000) throw new Error('User already exists');
+    else throw err;
+  }
 });
 
 /**

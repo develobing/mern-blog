@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const logger = require('morgan');
+const cors = require('cors');
 const dbConnect = require('./config/db/dbConnect');
 const userRoutes = require('./routes/users/userRoutes');
 const postRoutes = require('./routes/posts/postRoutes');
@@ -17,6 +18,7 @@ dbConnect();
 // Middlewares
 app.use(express.json());
 app.use(logger('dev'));
+if (process.env.NODE_ENV === 'development') app.use(cors());
 
 // Routes
 app.use('/api/users', userRoutes);

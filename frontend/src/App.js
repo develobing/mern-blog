@@ -1,8 +1,19 @@
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Home from './components/Home/Home';
+import Register from './components/Users/Register/Register';
+import Login from './components/Users/Login/Login';
+import Navbar from './Navigation/Navbar';
+
 function App() {
   return (
-    <div>
-      <h1 className="text-yellow-400">Blog App</h1>
-    </div>
+    <Router>
+      <Navbar />
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route exact path="/register" component={Register} />
+        <Route exact path="/login" component={Login} />
+      </Switch>
+    </Router>
   );
 }
 
