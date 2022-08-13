@@ -30,13 +30,18 @@ const fetchCategoryCtrl = asyncHandler(async (req, res, next) => {
  * @desc Create a category
  */
 const createCategoryCtrl = asyncHandler(async (req, res, next) => {
-  const loginUserId = req.user?._id;
-  const category = await Category.create({
-    user: loginUserId,
-    title: req.body?.title,
-  });
+  try {
+    const loginUserId = req.user?._id;
+    const category = await Category.create({
+      user: loginUserId,
+      title: req.body?.title,
+    });
 
-  res.json(category);
+    res.json(category);
+  } catch (err) {
+    if (err?.code === 11000) throw new Error('Category already exists');
+    else throw err;
+  }
 });
 
 /**
