@@ -6,7 +6,7 @@ dist
 build
 
 # public assets
-public
+/backend/public
 
 # environment variables
 .env
