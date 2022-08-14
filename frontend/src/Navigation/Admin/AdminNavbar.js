@@ -1,7 +1,6 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-
 import { Link } from 'react-router-dom';
 import {
   BellIcon,
@@ -20,7 +19,7 @@ const navigation = [
   { name: 'Posts', href: '/posts', current: false },
   { name: 'Authors', href: '/users', current: false },
   { name: 'Add Category', href: '/add-category', current: false },
-  { name: 'Category List', href: '/category-list', current: false },
+  { name: 'Categories', href: '/categories', current: false },
 ];
 
 function classNames(...classes) {

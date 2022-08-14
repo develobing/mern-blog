@@ -1,6 +1,11 @@
+import { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { PlusCircleIcon, BookOpenIcon } from '@heroicons/react/solid';
 import { useDispatch, useSelector } from 'react-redux';
-import { createCategoryAction } from '../../redux/slices/category/categorySlices';
+import {
+  createCategoryAction,
+  resetCategoryAction,
+} from '../../redux/slices/category/categorySlices';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
@@ -10,8 +15,9 @@ const formSchema = Yup.object().shape({
 });
 
 const AddNewCategory = () => {
+  const history = useHistory();
   const dispatch = useDispatch();
-  const { category, loading, appErr, serverErr } = useSelector(
+  const { loading, appErr, serverErr, isUpdated } = useSelector(
     (state) => state.category
   );
 
@@ -29,6 +35,13 @@ const AddNewCategory = () => {
     validationSchema: formSchema,
   });
 
+  useEffect(() => {
+    if (isUpdated) {
+      history.push('/categories');
+      dispatch(resetCategoryAction());
+    }
+  }, [isUpdated]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -37,7 +50,7 @@ const AddNewCategory = () => {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Add New Category
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <div className="mt-2 text-center text-sm text-gray-600">
             <p className="font-medium text-indigo-600 hover:text-indigo-500">
               These are the categories user will select when creating a post
             </p>
@@ -48,7 +61,7 @@ const AddNewCategory = () => {
                 {appErr || serverErr}
               </div>
             ) : null}
-          </p>
+          </div>
         </div>
         {/* Form */}
         <form className="mt-8 space-y-6" onSubmit={formik.handleSubmit}>

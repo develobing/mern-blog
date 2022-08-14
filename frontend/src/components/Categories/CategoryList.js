@@ -64,8 +64,8 @@ const CategoryList = () => {
                   </thead>
                   <tbody>
                     {/* Loop through categoriesList */}
-                    {categories?.map((category) => (
-                      <tr className="bg-gray-50">
+                    {categories?.map((category, index) => (
+                      <tr className="bg-gray-50" key={index}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-10 w-10">
@@ -93,11 +93,11 @@ const CategoryList = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <DateFormatter date={category?.createdAt} />
                         </td>
-                        <Link>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <Link to={`/update-category/${category?._id}`}>
                             <PencilAltIcon className="h-5 text-indigo-500" />
-                          </td>
-                        </Link>
+                          </Link>
+                        </td>
                       </tr>
                     ))}
                   </tbody>

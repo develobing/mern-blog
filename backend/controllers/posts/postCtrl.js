@@ -10,9 +10,13 @@ const cloudinaryUploadImage = require('../../utils/cloudinary');
  * @desc Fetch all posts
  */
 const fetchPostsCtrl = asyncHandler(async (req, res) => {
-  const posts = await Post.find({}).sort({ createdAt: -1 }).populate('user');
+  const category = req.query.category;
+  const filter = category ? { category } : {};
+  const posts = await Post.find(filter)
+    .sort({ createdAt: -1 })
+    .populate('user');
 
-  res.json({ posts });
+  res.json({ category, posts });
 });
 
 /**
@@ -51,22 +55,26 @@ const createPostCtrl = asyncHandler(async (req, res) => {
     );
   }
 
-  // 1. Get the path to image
-  const localPath = `public/images/posts/${req.file.filename}`;
+  let image;
+  if (req.file) {
+    // 1. Get the path to image
+    const localPath = `public/images/posts/${req.file.filename}`;
 
-  // 2. Upload to cloudinary
-  const imgUploaded = await cloudinaryUploadImage(localPath);
+    // 2. Upload to cloudinary
+    const imgUploaded = await cloudinaryUploadImage(localPath);
+    image = imgUploaded.url;
+
+    // 3. Remove upload image from local server
+    fs.unlinkSync(localPath);
+  }
 
   const post = await Post.create({
     ...req.body,
-    image: imgUploaded.url,
     user: authorId,
+    image,
   });
 
   res.json({ post });
-
-  // Remove upload image from local server
-  fs.unlinkSync(localPath);
 });
 
 /**
