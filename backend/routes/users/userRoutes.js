@@ -46,7 +46,7 @@ router.get('/', authMiddleware, getAllUsersCtrl);
 router.get('/:_id', fetchUserDetailsCtrl);
 
 // User profile
-router.get('/profile/:_id', authMiddleware, checkMyToken, userProfileCtrl);
+router.get('/profile/:_id', authMiddleware, userProfileCtrl);
 
 // User profile photo upload
 router.put(

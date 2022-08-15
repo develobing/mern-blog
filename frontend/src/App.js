@@ -26,7 +26,7 @@ function App() {
         <Route exact path="/" component={Home} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />
-        <PrivateRoute exact path="/profile" component={Profile} />
+        <PrivateRoute exact path="/profile/:_id" component={Profile} />
         <PrivateRoute exact path="/update-profile" component={UpdateProfile} />
         <PrivateRoute
           exact

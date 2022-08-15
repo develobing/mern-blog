@@ -55,7 +55,7 @@ const UpdateProfile = () => {
 
   useEffect(() => {
     if (isUpdated) {
-      history.push('/profile');
+      history.push(`/profile/${userAuth?._id}`);
       dispatch(refreshTokenAction());
       dispatch(resetUserAction());
     }

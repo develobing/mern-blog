@@ -28,8 +28,6 @@ const Login = () => {
     },
 
     onSubmit: (values) => {
-      console.log('values', values);
-
       // dispatch login user action
       dispatch(loginAction(values));
     },
@@ -39,7 +37,7 @@ const Login = () => {
 
   // redirect if user is logged in
   if (userAuth?.token) {
-    return <Redirect to="/profile" />;
+    return <Redirect to={`/profile/${userAuth?._id}`} />;
   }
 
   return (

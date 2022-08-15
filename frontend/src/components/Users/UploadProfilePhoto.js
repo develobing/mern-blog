@@ -65,7 +65,7 @@ export default function UploadProfilePhoto() {
 
   useEffect(() => {
     if (isUpdated) {
-      history.push('/posts');
+      history.push(`/profile/${userAuth?._id}`);
       dispatch(refreshTokenAction());
       dispatch(resetUserAction());
     }

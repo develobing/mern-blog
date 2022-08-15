@@ -8,19 +8,37 @@ import {
   UserIcon,
 } from '@heroicons/react/outline';
 import DateFormatter from '../../utils/DateFormatter';
-import { fetchProfileAction } from '../../redux/slices/users/usersSlices';
+import {
+  fetchProfileAction,
+  followUserAction,
+  unfollowUserAction,
+  resetUserAction,
+} from '../../redux/slices/users/usersSlices';
 import { MailIcon, EyeIcon } from '@heroicons/react/solid';
 import Loading from '../../utils/Loading';
 
-export default function Profile() {
+export default function Profile(props) {
+  const { match, computedMatch } = props;
+  const _id = match ? match.params?._id : computedMatch.params?._id;
+
   const dispatch = useDispatch();
-  const { userAuth, profile, loading, appErr, serverErr } = useSelector(
-    (state) => state.users
-  );
+  const { userAuth, profile, loading, appErr, serverErr, isUpdated } =
+    useSelector((state) => state.users);
 
   useEffect(() => {
-    dispatch(fetchProfileAction(userAuth?._id));
+    fetchProfile();
   }, []);
+
+  useEffect(() => {
+    if (isUpdated) {
+      dispatch(resetUserAction());
+      fetchProfile();
+    }
+  }, [isUpdated]);
+
+  const fetchProfile = () => {
+    dispatch(fetchProfileAction(_id));
+  };
 
   return (
     <>
@@ -33,7 +51,6 @@ export default function Profile() {
           <div className="flex items-center justify-center min-w-0 flex-1 bg-gray-300">
             <div className="text-red-500 text-2xl">
               {appErr ? appErr : serverErr}
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
             </div>
           </div>
         ) : (
@@ -45,13 +62,13 @@ export default function Profile() {
                   <div>
                     <div>
                       <img
-                        className="h-32 w-full object-cover lg:h-48"
+                        className="h-32 w-full object-cover lg:h-64"
                         src={profile?.profilePhoto}
                         alt={profile?.fullName}
                       />
                     </div>
                     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                      <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
+                      <div className="mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
                         <div className="flex -mt-20">
                           <img
                             className="h-24 w-24 rounded-full  ring-4 ring-white sm:h-32 sm:w-32"
@@ -60,16 +77,13 @@ export default function Profile() {
                           />
                         </div>
                         <div className="mt-6 sm:flex-1 sm:min-w-0 sm:flex sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
-                          <div className=" flex flex-col 2xl:block mt-10 min-w-0 flex-1">
+                          <div className="flex flex-col 2xl:block mt-10 min-w-0 flex-1">
                             <h1 className="text-2xl font-bold text-gray-900 ">
-                              {profile?.fullName}
-
+                              {profile?.fullName}{' '}
                               <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                                 {profile?.role}
                               </span>
-
                               {/* Display if verified or not */}
-
                               {profile?.isAccountVerified ? (
                                 <span className="inline-flex ml-2 items-center px-3 py-0.5  rounded-lg text-sm font-medium bg-green-600 text-gray-300">
                                   Account Verified
@@ -106,37 +120,41 @@ export default function Profile() {
 
                             {/* is login user */}
                             {/* Upload profile photo */}
-                            <Link
-                              to="/upload-profile-photo"
-                              className="inline-flex justify-center w-48 px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                            >
-                              <UploadIcon
-                                className="-ml-1 mr-2 h-5 w-5 text-gray-400"
-                                aria-hidden="true"
-                              />
-                              <span>Upload Photo</span>
-                            </Link>
+                            {userAuth?._id === profile?._id && (
+                              <Link
+                                to="/upload-profile-photo"
+                                className="inline-flex justify-center w-48 px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                              >
+                                <UploadIcon
+                                  className="-ml-1 mr-2 h-5 w-5 text-gray-400"
+                                  aria-hidden="true"
+                                />
+                                <span>Upload Photo</span>
+                              </Link>
+                            )}
                           </div>
 
                           <div className="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
                             {/* // Hide follow button from the same */}
                             <div>
-                              <button
-                                // onClick={() =>
-                                //   dispatch(unFollowUserAction(profile?._id))
-                                // }
-                                className="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                              >
-                                <EmojiSadIcon
-                                  className="-ml-1 mr-2 h-5 w-5 text-gray-400"
-                                  aria-hidden="true"
-                                />
-                                <span>Unfollow</span>
-                              </button>
-
-                              <>
+                              {profile?.followers?.includes(userAuth?._id) ? (
                                 <button
-                                  // onClick={followHandler}
+                                  onClick={() =>
+                                    dispatch(unfollowUserAction(profile?._id))
+                                  }
+                                  className="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                                >
+                                  <EmojiSadIcon
+                                    className="-ml-1 mr-2 h-5 w-5 text-gray-400"
+                                    aria-hidden="true"
+                                  />
+                                  <span>Unfollow</span>
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() =>
+                                    dispatch(followUserAction(profile?._id))
+                                  }
                                   type="button"
                                   className="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
                                 >
@@ -146,14 +164,13 @@ export default function Profile() {
                                   />
                                   <span>Follow </span>
                                 </button>
-                              </>
+                              )}
                             </div>
 
                             {/* Update Profile */}
-
-                            <>
+                            {userAuth?._id === profile?._id && (
                               <Link
-                                to="/update-profile"
+                                to={`/update-profile`}
                                 className="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
                               >
                                 <UserIcon
@@ -162,7 +179,8 @@ export default function Profile() {
                                 />
                                 <span>Update Profile</span>
                               </Link>
-                            </>
+                            )}
+
                             {/* Send Mail */}
                             <Link
                               // to={`/send-mail?email=${profile?.email}`}
