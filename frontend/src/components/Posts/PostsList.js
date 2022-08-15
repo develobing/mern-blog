@@ -106,7 +106,7 @@ export default function PostsList() {
                       key={post._id}
                     >
                       <div className="mb-10  w-full lg:w-1/4 px-3">
-                        <Link>
+                        <Link to={`/posts/${post?._id}`}>
                           {/* Post image */}
                           <img
                             className="w-full h-full object-cover rounded"
@@ -157,7 +157,10 @@ export default function PostsList() {
                         </div>
                       </div>
                       <div className="w-full lg:w-3/4 px-3">
-                        <Link className="hover:underline">
+                        <Link
+                          className="hover:underline"
+                          to={`/posts/${post?._id}`}
+                        >
                           <h3 className="mb-1 text-2xl text-green-400 font-bold font-heading">
                             {/* {capitalizeWord(post?.title)} */}
                             {post?.title}

@@ -125,6 +125,11 @@ userSchema.virtual('posts', {
   localField: '_id',
 });
 
+// Virtual method to populate created posts
+userSchema.virtual('fullName').get(function () {
+  return `${this.firstName} ${this.lastName}`;
+});
+
 // Hash password
 userSchema.pre('save', async function (next) {
   if (this.isModified('password')) {

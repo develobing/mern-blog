@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import poster from '../../img/poster.png';
-import { loginAction } from '../../../redux/slices/users/usersSlices';
+import poster from '../img/poster.png';
+import { loginAction } from '../../redux/slices/users/usersSlices';
 
 // Form schema
 const formSchema = Yup.object().shape({

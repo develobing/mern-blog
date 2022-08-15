@@ -3,8 +3,11 @@ import PrivateRoute from './Navigation/ProtectedRoutes/PrivateRoute';
 import AdminRoute from './Navigation/ProtectedRoutes/AdminRoute';
 import Navbar from './Navigation/Navbar';
 import Home from './components/Home/Home';
-import Register from './components/Users/Register/Register';
-import Login from './components/Users/Login/Login';
+import Register from './components/Users/Register';
+import Login from './components/Users/Login';
+import Profile from './components/Users/Profile';
+import UpdateProfile from './components/Users/UpdateProfile';
+import UploadProfilePhoto from './components/Users/UploadProfilePhoto';
 import CategoryList from './components/Categories/CategoryList';
 import AddNewCategory from './components/Categories/AddNewCategory';
 import UpdateCategory from './components/Categories/UpdateCategory';
@@ -23,6 +26,13 @@ function App() {
         <Route exact path="/" component={Home} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/login" component={Login} />
+        <PrivateRoute exact path="/profile" component={Profile} />
+        <PrivateRoute exact path="/update-profile" component={UpdateProfile} />
+        <PrivateRoute
+          exact
+          path="/upload-profile-photo"
+          component={UploadProfilePhoto}
+        />
 
         <Route exact path="/posts" component={PostsList} />
         <Route exact path="/posts/:_id" component={PostDetails} />

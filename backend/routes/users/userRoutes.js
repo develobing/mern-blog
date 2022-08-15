@@ -2,6 +2,7 @@ const express = require('express');
 const {
   userRegisterCtrl,
   loginUserCtrl,
+  refreshTokenCtrl,
   getAllUsersCtrl,
   deleteUserCtrl,
   fetchUserDetailsCtrl,
@@ -34,6 +35,9 @@ router.post('/register', userRegisterCtrl);
 
 // User login
 router.post('/login', loginUserCtrl);
+
+// Refresh token
+router.post('/refresh-token', authMiddleware, refreshTokenCtrl);
 
 // User all fetch
 router.get('/', authMiddleware, getAllUsersCtrl);

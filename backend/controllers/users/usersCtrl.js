@@ -54,6 +54,26 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @desc Refresh token
+ */
+const refreshTokenCtrl = asyncHandler(async (req, res) => {
+  const _userId = req.user?._id;
+
+  // Check if user exists
+  const userFound = await User.findById(_userId);
+
+  res.json({
+    _id: userFound?._id,
+    firstName: userFound?.firstName,
+    lastName: userFound?.lastName,
+    email: userFound?.email,
+    profilePhoto: userFound?.profilePhoto,
+    isAdmin: userFound?.isAdmin,
+    token: generateToken(userFound?._id),
+  });
+});
+
+/**
  * @desc Fetch all users
  */
 const getAllUsersCtrl = asyncHandler(async (req, res) => {
@@ -121,7 +141,7 @@ const updateUserCtrl = asyncHandler(async (req, res) => {
       new: true,
       runValidators: true,
     }
-  );
+  ).populate('posts');
 
   res.json(user);
 });
@@ -374,15 +394,19 @@ const profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
 
   // 3. Find the login user and update the profile photo
   const loginUserId = req.user?._id;
-  await User.findByIdAndUpdate(
+  const profile = await User.findByIdAndUpdate(
     loginUserId,
     {
       profilePhoto: imgUploaded.url,
     },
     { new: true }
-  );
+  ).populate('posts');
 
-  res.json({ profileImage: imgUploaded.url, msg: 'Profile photo upload' });
+  res.json({
+    profile,
+    profilePhoto: imgUploaded.url,
+    msg: 'Profile photo upload',
+  });
 
   // Remove upload image from local server
   fs.unlinkSync(localPath);
@@ -407,4 +431,5 @@ module.exports = {
   forgetPasswordTokenCtrl,
   passwordResetCtrl,
   profilePhotoUploadCtrl,
+  refreshTokenCtrl,
 };

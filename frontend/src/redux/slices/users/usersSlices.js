@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { API_HOST } from '../../../constants';
 
@@ -66,6 +66,43 @@ export const loginAction = createAsyncThunk(
   }
 );
 
+// Refresh token action
+export const refreshTokenAction = createAsyncThunk(
+  'users/refreshToken',
+  async (userData, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.post(
+        `${API_HOST}/api/users/refresh-token`,
+        userData,
+        config
+      );
+
+      // Save user into localStorage
+      localStorage.setItem('userInfo', JSON.stringify(data));
+
+      return data;
+    } catch (err) {
+      console.log('refreshToken() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
 // Logout action
 export const logoutAction = createAsyncThunk(
   'users/logout',
@@ -84,6 +121,112 @@ export const logoutAction = createAsyncThunk(
     }
   }
 );
+
+// Profile action
+export const fetchProfileAction = createAsyncThunk(
+  'users/profile',
+  async (_userId, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.get(
+        `${API_HOST}/api/users/profile/${_userId}`,
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('fetchProfileAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
+export const updateProfileAction = createAsyncThunk(
+  'users/updateProfile',
+  async (profile, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.put(
+        `${API_HOST}/api/users/${profile?._userId}`,
+        profile,
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('updateProfileAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
+// Upload profile photo action
+export const uploadProfilePhotoAction = createAsyncThunk(
+  'users/uploadProfilePhoto',
+  async (profilePhoto, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const formData = new FormData();
+      formData.append('image', profilePhoto);
+
+      const { data } = await axios.put(
+        `${API_HOST}/api/users/profile-photo`,
+        formData,
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('uploadProfilePhotoAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
+// Reset user actions
+export const resetUserAction = createAction('users/reset');
 
 // get user from localStorage and place into store
 const userLoginFromStorage = localStorage.getItem('userInfo')
@@ -149,6 +292,92 @@ const usersSlices = createSlice({
       state.loading = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;
+    });
+
+    // Refresh token
+    builder.addCase(refreshTokenAction.pending, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+    });
+    builder.addCase(refreshTokenAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.userAuth = action?.payload;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+    });
+    builder.addCase(refreshTokenAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+    });
+
+    // Fetch profile
+    builder.addCase(fetchProfileAction.pending, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+    });
+    builder.addCase(fetchProfileAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.profile = action?.payload;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+    });
+    builder.addCase(fetchProfileAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+    });
+
+    // Fetch profile
+    builder.addCase(updateProfileAction.pending, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isUpdated = false;
+    });
+    builder.addCase(updateProfileAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.profile = action?.payload;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isUpdated = true;
+    });
+    builder.addCase(updateProfileAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+      state.isUpdated = false;
+    });
+
+    // Upload profile photo
+    builder.addCase(uploadProfilePhotoAction.pending, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isUpdated = false;
+    });
+    builder.addCase(uploadProfilePhotoAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.profile = action?.payload?.profile;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isUpdated = true;
+    });
+    builder.addCase(uploadProfilePhotoAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+      state.isUpdated = false;
+    });
+
+    // Reset profile photo
+    builder.addCase(resetUserAction, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isUpdated = false;
     });
   },
 });
