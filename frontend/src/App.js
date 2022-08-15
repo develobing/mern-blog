@@ -9,7 +9,9 @@ import CategoryList from './components/Categories/CategoryList';
 import AddNewCategory from './components/Categories/AddNewCategory';
 import UpdateCategory from './components/Categories/UpdateCategory';
 import PostsList from './components/Posts/PostsList';
+import PostDetails from './components/Posts/PostDetails';
 import CreatePost from './components/Posts/CreatePost';
+import UpdatePost from './components/Posts/UpdatePost';
 
 function App() {
   return (
@@ -22,7 +24,9 @@ function App() {
         <Route exact path="/login" component={Login} />
 
         <Route exact path="/posts" component={PostsList} />
+        <Route exact path="/posts/:_id" component={PostDetails} />
         <PrivateRoute exact path="/create-post" component={CreatePost} />
+        <PrivateRoute exact path="/update-post/:_id" component={UpdatePost} />
 
         <AdminRoute exact path="/categories" component={CategoryList} />
         <AdminRoute exact path="/add-category" component={AddNewCategory} />

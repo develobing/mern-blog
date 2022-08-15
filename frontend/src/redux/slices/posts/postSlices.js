@@ -3,7 +3,7 @@ import axios from 'axios';
 import { API_HOST } from '../../../constants';
 
 // Fetch all posts
-export const fetchPosts = createAsyncThunk(
+export const fetchPostsAction = createAsyncThunk(
   'posts/fetchPosts',
   async (category, { rejectWithValue, getState, dispatch }) => {
     // http call
@@ -14,7 +14,29 @@ export const fetchPosts = createAsyncThunk(
 
       return data;
     } catch (err) {
-      console.log('createPostAction() - err', err);
+      console.log('fetchPostsAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
+// Fetch post details
+export const fetchPostDetailsAction = createAsyncThunk(
+  'posts/fetchPostDetails',
+  async (_id, { rejectWithValue, getState, dispatch }) => {
+    // http call
+    try {
+      const { data } = await axios.get(`${API_HOST}/api/posts/${_id}`);
+      console.log('data', data);
+
+      return data;
+    } catch (err) {
+      console.log('fetchPostDetailsAction() - err', err);
 
       if (!err?.response) {
         throw err;
@@ -57,6 +79,75 @@ export const createPostAction = createAsyncThunk(
       return data;
     } catch (err) {
       console.log('createPostAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
+// Update post action
+export const updatePostAction = createAsyncThunk(
+  'post/update',
+  async (post, { rejectWithValue, getState, dispatch }) => {
+    // http call
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const { token } = userAuth;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.put(
+        `${API_HOST}/api/posts/${post?._id}`,
+        post,
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('updatePostAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
+// Delete post action
+export const deletePostAction = createAsyncThunk(
+  'post/delete',
+  async (_id, { rejectWithValue, getState, dispatch }) => {
+    // http call
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const { token } = userAuth;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.delete(
+        `${API_HOST}/api/posts/${_id}`,
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('deletePostAction() - err', err);
 
       if (!err?.response) {
         throw err;
@@ -147,22 +238,35 @@ const postSlice = createSlice({
 
   extraReducers: (builder) => {
     // Fetch all posts
-    builder.addCase(fetchPosts.pending, (state, action) => {
+    builder.addCase(fetchPostsAction.pending, (state, action) => {
       state.loading = true;
-      state.isUpdated = false;
     });
-    builder.addCase(fetchPosts.fulfilled, (state, action) => {
+    builder.addCase(fetchPostsAction.fulfilled, (state, action) => {
       state.loading = false;
       state.posts = action?.payload?.posts;
       state.appErr = null;
       state.serverErr = null;
-      state.isUpdated = true;
     });
-    builder.addCase(fetchPosts.rejected, (state, action) => {
+    builder.addCase(fetchPostsAction.rejected, (state, action) => {
       state.loading = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;
-      state.isUpdated = false;
+    });
+
+    // Fetch post details
+    builder.addCase(fetchPostDetailsAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(fetchPostDetailsAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.post = action?.payload?.post;
+      state.appErr = null;
+      state.serverErr = null;
+    });
+    builder.addCase(fetchPostDetailsAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
     });
 
     // Create a post
@@ -172,12 +276,50 @@ const postSlice = createSlice({
     });
     builder.addCase(createPostAction.fulfilled, (state, action) => {
       state.loading = false;
-      state.post = action?.payload;
+      state.post = action?.payload?.post;
       state.appErr = null;
       state.serverErr = null;
       state.isUpdated = true;
     });
     builder.addCase(createPostAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+      state.isUpdated = false;
+    });
+
+    // Update a post
+    builder.addCase(updatePostAction.pending, (state, action) => {
+      state.loading = true;
+      state.isUpdated = false;
+    });
+    builder.addCase(updatePostAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.post = action?.payload?.post;
+      state.appErr = null;
+      state.serverErr = null;
+      state.isUpdated = true;
+    });
+    builder.addCase(updatePostAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+      state.isUpdated = false;
+    });
+
+    // Update a post
+    builder.addCase(deletePostAction.pending, (state, action) => {
+      state.loading = true;
+      state.isUpdated = false;
+    });
+    builder.addCase(deletePostAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.post = action?.payload?.post;
+      state.appErr = null;
+      state.serverErr = null;
+      state.isUpdated = true;
+    });
+    builder.addCase(deletePostAction.rejected, (state, action) => {
       state.loading = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;

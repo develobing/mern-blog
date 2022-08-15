@@ -21,10 +21,10 @@ const formSchema = Yup.object().shape({
 });
 
 const UpdateCategory = (props) => {
-  const history = useHistory();
   const { match, computedMatch } = props;
   const _id = match ? match.params?._id : computedMatch.params?._id;
 
+  const history = useHistory();
   const dispatch = useDispatch();
   const { category, loading, appErr, serverErr, isUpdated } = useSelector(
     (state) => state.category

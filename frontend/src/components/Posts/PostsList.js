@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { ThumbDownIcon, ThumbUpIcon, EyeIcon } from '@heroicons/react/outline';
 import {
-  fetchPosts,
+  fetchPostsAction,
   addLikesToPostAction,
   addDisikesToPostAction,
 } from '../../redux/slices/posts/postSlices';
@@ -26,12 +26,12 @@ export default function PostsList() {
 
   // Fetch categories
   useEffect(() => {
-    renewPosts();
+    fetchPosts();
     dispatch(fetchCategoriesAction());
   }, [dispatch]);
 
-  const renewPosts = (category = '') => {
-    dispatch(fetchPosts(category));
+  const fetchPosts = (category = '') => {
+    dispatch(fetchPostsAction(category));
   };
 
   return (
@@ -52,7 +52,7 @@ export default function PostsList() {
                 {/* View All */}
                 <button
                   className="inline-block py-2 px-6 rounded-l-xl rounded-t-xl bg-green-600 hover:bg-green-700 text-gray-50 font-bold leading-loose transition duration-200"
-                  onClick={() => renewPosts()}
+                  onClick={() => fetchPosts()}
                 >
                   View All Posts
                 </button>
@@ -81,7 +81,7 @@ export default function PostsList() {
                         <li>
                           <p
                             className="block cursor-pointer py-2 px-3 mb-4 rounded text-yellow-500 font-bold bg-gray-500"
-                            onClick={() => renewPosts(category?.title)}
+                            onClick={() => fetchPosts(category?.title)}
                           >
                             {category?.title}
                           </p>
@@ -98,7 +98,7 @@ export default function PostsList() {
                 ) : appErr || serverErr ? (
                   <div className="text-red-600">Err</div>
                 ) : posts?.length <= 0 ? (
-                  <div className="text-red-600">No post found</div>
+                  <div className="text-red-600 text-center">No post found</div>
                 ) : (
                   posts?.map((post) => (
                     <div
@@ -165,7 +165,10 @@ export default function PostsList() {
                         </Link>
                         <p className="text-gray-300">{post?.description}</p>
                         {/* Read more */}
-                        <Link className="text-indigo-500 hover:underline">
+                        <Link
+                          className="text-indigo-500 hover:underline"
+                          to={`/posts/${post?._id}`}
+                        >
                           Read More..
                         </Link>
                         {/* User Avatar */}

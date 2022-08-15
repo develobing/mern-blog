@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import { fetchCategoriesAction } from '../../redux/slices/category/categorySlices';
@@ -8,6 +8,8 @@ const CategoryDropdown = (props) => {
   const { categories, loading, appErr, serverErr } = useSelector(
     (state) => state.category
   );
+  const [initialValue, setInitialValue] = useState({ label: '', value: '' });
+
   const allCategories = categories?.map((category) => {
     return {
       label: category?.title,
@@ -18,6 +20,19 @@ const CategoryDropdown = (props) => {
   useEffect(() => {
     dispatch(fetchCategoriesAction());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (categories?.length > 0) {
+      const targetCategory = categories?.find(
+        (category) => category?.title === props?.value
+      );
+
+      setInitialValue({
+        label: targetCategory?.title,
+        value: targetCategory?._id,
+      });
+    }
+  }, [categories, props]);
 
   const handleChange = (value) => {
     const { label } = value;
@@ -39,7 +54,7 @@ const CategoryDropdown = (props) => {
           options={allCategories}
           onChange={handleChange}
           onBlur={handleBlur}
-          value={props?.value?.label}
+          value={initialValue}
         />
       )}
 
