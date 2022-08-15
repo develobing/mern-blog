@@ -10,7 +10,7 @@ import {
   LogoutIcon,
 } from '@heroicons/react/outline';
 import { PlusIcon } from '@heroicons/react/solid';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logoutAction } from '../../redux/slices/users/usersSlices';
 
 const navigation = [
@@ -28,6 +28,7 @@ function classNames(...classes) {
 
 const AdminNavbar = () => {
   const dispatch = useDispatch();
+  const { userAuth } = useSelector((state) => state.users);
 
   //Navigation
   const userNavigation = [
@@ -112,7 +113,7 @@ const AdminNavbar = () => {
                             <span className="sr-only">Open user menu</span>
                             <img
                               className="h-8 w-8 rounded-full"
-                              // src={userAuth?.profilePhoto}
+                              src={userAuth?.profilePhoto}
                               alt="Admin Profile"
                             />
                           </Menu.Button>
@@ -182,10 +183,10 @@ const AdminNavbar = () => {
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-white">
-                    {/* {user.name} */}
+                    {userAuth?.name}
                   </div>
                   <div className="text-sm font-medium text-gray-400">
-                    {/* {user.email} */}
+                    {userAuth?.email}
                   </div>
                 </div>
                 <button className="ml-auto flex-shrink-0 bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">

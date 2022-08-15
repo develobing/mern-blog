@@ -14,7 +14,13 @@ const fetchPostsCtrl = asyncHandler(async (req, res) => {
   const filter = category ? { category } : {};
   const posts = await Post.find(filter)
     .sort({ createdAt: -1 })
-    .populate('user');
+    .populate('user')
+    .populate({
+      path: 'comments',
+      populate: {
+        path: 'user',
+      },
+    });
 
   res.json({ category, posts });
 });
@@ -26,7 +32,15 @@ const fetchPostCtrl = asyncHandler(async (req, res) => {
   const { _id } = req.params;
   validateMongodbId(_id);
 
-  const post = await Post.findById(_id).populate('user likes dislikes');
+  const post = await Post.findById(_id)
+    .populate('user likes dislikes')
+    .populate({
+      path: 'comments',
+      populate: {
+        path: 'user',
+      },
+    });
+
   if (!post) throw new Error(`Post not found with _id of ${_id}`, 404);
 
   // Update number of views

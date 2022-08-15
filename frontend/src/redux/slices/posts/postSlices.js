@@ -32,7 +32,6 @@ export const fetchPostDetailsAction = createAsyncThunk(
     // http call
     try {
       const { data } = await axios.get(`${API_HOST}/api/posts/${_id}`);
-      console.log('data', data);
 
       return data;
     } catch (err) {
@@ -55,7 +54,7 @@ export const createPostAction = createAsyncThunk(
     try {
       const state = getState();
       const { userAuth } = state.users || {};
-      const { token } = userAuth;
+      const token = userAuth?.token;
 
       const formData = new FormData();
       formData.append('title', post?.title);
@@ -97,7 +96,7 @@ export const updatePostAction = createAsyncThunk(
     try {
       const state = getState();
       const { userAuth } = state.users || {};
-      const { token } = userAuth;
+      const token = userAuth?.token;
 
       const config = {
         headers: {
@@ -132,7 +131,7 @@ export const deletePostAction = createAsyncThunk(
     try {
       const state = getState();
       const { userAuth } = state.users || {};
-      const { token } = userAuth;
+      const token = userAuth?.token;
 
       const config = {
         headers: {
@@ -166,7 +165,7 @@ export const addLikesToPostAction = createAsyncThunk(
     try {
       const state = getState();
       const { userAuth } = state.users || {};
-      const { token } = userAuth;
+      const token = userAuth?.token;
 
       const config = {
         headers: {
@@ -201,7 +200,7 @@ export const addDisikesToPostAction = createAsyncThunk(
     try {
       const state = getState();
       const { userAuth } = state.users || {};
-      const { token } = userAuth;
+      const token = userAuth?.token;
 
       const config = {
         headers: {

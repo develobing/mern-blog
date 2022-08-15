@@ -9,7 +9,7 @@ import {
   BookOpenIcon,
 } from '@heroicons/react/outline';
 import { PlusIcon, LogoutIcon } from '@heroicons/react/solid';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logoutAction } from '../../redux/slices/users/usersSlices';
 
 const navigation = [
@@ -23,8 +23,9 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-const PrivateNavbar = ({ isLogin }) => {
+const PrivateNavbar = () => {
   const dispatch = useDispatch();
+  const { userAuth } = useSelector((state) => state.users);
 
   const userNavigation = [
     { name: 'Your Profile', href: `/profile` },
@@ -106,7 +107,7 @@ const PrivateNavbar = ({ isLogin }) => {
                             <span className="sr-only">Open user menu</span>
                             <img
                               className="h-8 w-8 rounded-full"
-                              // src={isLogin?.profilePhoto}
+                              src={userAuth?.profilePhoto}
                               alt=""
                             />
                           </Menu.Button>
@@ -174,16 +175,16 @@ const PrivateNavbar = ({ isLogin }) => {
                 <div className="flex-shrink-0">
                   <img
                     className="h-10 w-10 rounded-full"
-                    // src={isLogin.profilePhoto}
+                    src={userAuth.profilePhoto}
                     alt=""
                   />
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-white">
-                    {/* {user.name} */}
+                    {userAuth.name}
                   </div>
                   <div className="text-sm font-medium text-gray-400">
-                    {/* {user.email} */}
+                    {userAuth.email}
                   </div>
                 </div>
                 <button className="ml-auto flex-shrink-0 bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">

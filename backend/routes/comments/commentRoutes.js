@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   fetchAllComments,
+  fetchPostComments,
   fetchCommentCtrl,
   createCommentCtrl,
   updateCommentCtrl,
@@ -11,7 +12,10 @@ const { authMiddleware } = require('../../middlewares/auth/authMiddleware');
 const router = express.Router();
 
 // Fetch all comments
-router.get('/', authMiddleware, fetchAllComments);
+router.get('/', fetchAllComments);
+
+// Fetch post comments
+router.get('/posts/:_postId', fetchPostComments);
 
 // Fetch a comment
 router.get('/:_id', authMiddleware, fetchCommentCtrl);

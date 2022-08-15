@@ -78,7 +78,7 @@ export default function PostsList() {
                       </div>
                     ) : (
                       categories?.map((category) => (
-                        <li>
+                        <li key={category?._id}>
                           <p
                             className="block cursor-pointer py-2 px-3 mb-4 rounded text-yellow-500 font-bold bg-gray-500"
                             onClick={() => fetchPosts(category?.title)}
@@ -196,6 +196,7 @@ export default function PostsList() {
                             </div>
                           </div>
                         </div>
+
                         {/* <p className="text-gray-500">
                           Quisque id sagittis turpis. Nulla sollicitudin rutrum
                           eros eu dictum...

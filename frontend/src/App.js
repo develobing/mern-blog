@@ -12,6 +12,7 @@ import PostsList from './components/Posts/PostsList';
 import PostDetails from './components/Posts/PostDetails';
 import CreatePost from './components/Posts/CreatePost';
 import UpdatePost from './components/Posts/UpdatePost';
+import UpdateComment from './components/Comments/UpdateComment';
 
 function App() {
   return (
@@ -27,6 +28,11 @@ function App() {
         <Route exact path="/posts/:_id" component={PostDetails} />
         <PrivateRoute exact path="/create-post" component={CreatePost} />
         <PrivateRoute exact path="/update-post/:_id" component={UpdatePost} />
+        <PrivateRoute
+          exact
+          path="/update-comment/:_id"
+          component={UpdateComment}
+        />
 
         <AdminRoute exact path="/categories" component={CategoryList} />
         <AdminRoute exact path="/add-category" component={AddNewCategory} />

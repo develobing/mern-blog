@@ -2,47 +2,15 @@ import { createAsyncThunk, createSlice, createAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { API_HOST } from '../../../constants';
 
-// Fetch all category action
-export const fetchCategoriesAction = createAsyncThunk(
-  'category/fetchAll',
-  async (_, { rejectWithValue, getState, dispatch }) => {
+// Fetch post comments
+export const fetchPostCommentsAction = createAsyncThunk(
+  'comments/fetchPostComments',
+  async (postId, { rejectWithValue, getState, dispatch }) => {
     // http call
     try {
       const state = getState();
       const { userAuth } = state.users || {};
       const token = userAuth?.token;
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-
-      const { data } = await axios.get(`${API_HOST}/api/categories`, config);
-
-      return data;
-    } catch (err) {
-      console.log('fetchCategoriesAction() - err', err);
-
-      if (!err?.response) {
-        throw err;
-      } else {
-        return rejectWithValue(err?.response?.data);
-      }
-    }
-  }
-);
-
-// Fetch details action
-export const fetchCategoryAction = createAsyncThunk(
-  'category/fetch',
-  async (category, { rejectWithValue, getState, dispatch }) => {
-    // http call
-    try {
-      const state = getState();
-      const { userAuth } = state.users || {};
-      const token = userAuth?.token;
-      const { _id } = category;
 
       const config = {
         headers: {
@@ -51,13 +19,13 @@ export const fetchCategoryAction = createAsyncThunk(
       };
 
       const { data } = await axios.get(
-        `${API_HOST}/api/categories/${_id}`,
+        `${API_HOST}/api/comments/posts/${postId}`,
         config
       );
 
       return data;
     } catch (err) {
-      console.log('fetchCategoryAction() - err', err);
+      console.log('fetchPostCommentsAction() - err', err);
 
       if (!err?.response) {
         throw err;
@@ -68,16 +36,49 @@ export const fetchCategoryAction = createAsyncThunk(
   }
 );
 
-// Create category action
-export const createCategoryAction = createAsyncThunk(
-  'category/create',
-  async (category, { rejectWithValue, getState, dispatch }) => {
+// Fetch a comment
+export const fetchCommentAction = createAsyncThunk(
+  'comments/fetchComment',
+  async (commentId, { rejectWithValue, getState, dispatch }) => {
     // http call
     try {
       const state = getState();
       const { userAuth } = state.users || {};
       const token = userAuth?.token;
-      const { title } = category;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.get(
+        `${API_HOST}/api/comments/${commentId}`,
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('fetchCommentAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
+// Create comment action
+export const createCommentAction = createAsyncThunk(
+  'comment/create',
+  async (comment, { rejectWithValue, getState, dispatch }) => {
+    // http call
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
 
       const config = {
         headers: {
@@ -86,14 +87,14 @@ export const createCategoryAction = createAsyncThunk(
       };
 
       const { data } = await axios.post(
-        `${API_HOST}/api/categories`,
-        { title },
+        `${API_HOST}/api/comments`,
+        comment,
         config
       );
 
       return data;
     } catch (err) {
-      console.log('createCategoryAction() - err', err);
+      console.log('createCommentAction() - err', err);
 
       if (!err?.response) {
         throw err;
@@ -104,16 +105,15 @@ export const createCategoryAction = createAsyncThunk(
   }
 );
 
-// Update category action
-export const updateCategoryAction = createAsyncThunk(
-  'category/update',
-  async (category, { rejectWithValue, getState, dispatch }) => {
+// Update comment action
+export const updateCommentAction = createAsyncThunk(
+  'comment/update',
+  async (comment, { rejectWithValue, getState, dispatch }) => {
     // http call
     try {
       const state = getState();
       const { userAuth } = state.users || {};
       const token = userAuth?.token;
-      const { _id, title } = category;
 
       const config = {
         headers: {
@@ -122,14 +122,14 @@ export const updateCategoryAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-        `${API_HOST}/api/categories/${_id}`,
-        { title },
+        `${API_HOST}/api/comments/${comment?._id}`,
+        comment,
         config
       );
 
       return data;
     } catch (err) {
-      console.log('updateCategoryAction() - err', err);
+      console.log('updateCommentAction() - err', err);
 
       if (!err?.response) {
         throw err;
@@ -140,16 +140,15 @@ export const updateCategoryAction = createAsyncThunk(
   }
 );
 
-// Delete category action
-export const deleteCategoryAction = createAsyncThunk(
-  'category/delete',
-  async (category, { rejectWithValue, getState, dispatch }) => {
+// Delete comment action
+export const deleteCommentAction = createAsyncThunk(
+  'comment/delete',
+  async (_commentId, { rejectWithValue, getState, dispatch }) => {
     // http call
     try {
       const state = getState();
       const { userAuth } = state.users || {};
       const token = userAuth?.token;
-      const { _id } = category;
 
       const config = {
         headers: {
@@ -158,13 +157,13 @@ export const deleteCategoryAction = createAsyncThunk(
       };
 
       const { data } = await axios.delete(
-        `${API_HOST}/api/categories/${_id}`,
+        `${API_HOST}/api/comments/${_commentId}`,
         config
       );
 
       return data;
     } catch (err) {
-      console.log('deleteCategoryAction() - err', err);
+      console.log('deleteCommentAction() - err', err);
 
       if (!err?.response) {
         throw err;
@@ -175,121 +174,113 @@ export const deleteCategoryAction = createAsyncThunk(
   }
 );
 
-// Action to redirect
-export const resetCategoryAction = createAction('category/reset');
+// Action to reset
+export const resetCommentAction = createAction('post/reset');
 
-// slices
-const categorySlices = createSlice({
-  name: 'category',
+const commentSlices = createSlice({
+  name: 'comments',
+
   initialState: {},
 
   extraReducers: (builder) => {
-    // fetch all categories
-    builder.addCase(fetchCategoriesAction.pending, (state, action) => {
+    // Fetch post comments
+    builder.addCase(fetchPostCommentsAction.pending, (state, action) => {
       state.loading = true;
-      state.categories = null;
     });
-    builder.addCase(fetchCategoriesAction.fulfilled, (state, action) => {
+    builder.addCase(fetchPostCommentsAction.fulfilled, (state, action) => {
       state.loading = false;
-      state.categories = action?.payload?.categories;
-
+      state.comments = action?.payload?.comments;
       state.appErr = null;
       state.serverErr = null;
     });
-    builder.addCase(fetchCategoriesAction.rejected, (state, action) => {
+    builder.addCase(fetchPostCommentsAction.rejected, (state, action) => {
       state.loading = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;
     });
 
-    // fetch details
-    builder.addCase(fetchCategoryAction.pending, (state, action) => {
+    // Fetch a comment
+    builder.addCase(fetchCommentAction.pending, (state, action) => {
       state.loading = true;
-      state.category = null;
     });
-    builder.addCase(fetchCategoryAction.fulfilled, (state, action) => {
+    builder.addCase(fetchCommentAction.fulfilled, (state, action) => {
       state.loading = false;
-      state.category = action?.payload?.category;
-
+      state.comment = action?.payload?.comment;
       state.appErr = null;
       state.serverErr = null;
     });
-    builder.addCase(fetchCategoryAction.rejected, (state, action) => {
+    builder.addCase(fetchCommentAction.rejected, (state, action) => {
       state.loading = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;
     });
 
-    // create category
-    builder.addCase(createCategoryAction.pending, (state, action) => {
+    // Create a comment
+    builder.addCase(createCommentAction.pending, (state, action) => {
       state.loading = true;
-      state.category = null;
       state.isUpdated = false;
     });
-    builder.addCase(createCategoryAction.fulfilled, (state, action) => {
+    builder.addCase(createCommentAction.fulfilled, (state, action) => {
       state.loading = false;
-      state.category = action?.payload;
+      state.comment = action?.payload?.comment;
       state.appErr = null;
       state.serverErr = null;
       state.isUpdated = true;
     });
-    builder.addCase(createCategoryAction.rejected, (state, action) => {
+    builder.addCase(createCommentAction.rejected, (state, action) => {
       state.loading = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;
       state.isUpdated = false;
     });
 
-    // update category
-    builder.addCase(updateCategoryAction.pending, (state, action) => {
+    // Update a comment
+    builder.addCase(updateCommentAction.pending, (state, action) => {
       state.loading = true;
-      state.updatedCategory = null;
       state.isUpdated = false;
     });
-    builder.addCase(updateCategoryAction.fulfilled, (state, action) => {
+    builder.addCase(updateCommentAction.fulfilled, (state, action) => {
       state.loading = false;
-      state.updatedCategory = action?.payload;
+      state.comment = action?.payload?.comment;
       state.appErr = null;
       state.serverErr = null;
       state.isUpdated = true;
     });
-    builder.addCase(updateCategoryAction.rejected, (state, action) => {
+    builder.addCase(updateCommentAction.rejected, (state, action) => {
       state.loading = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;
       state.isUpdated = false;
     });
 
-    // delete category
-    builder.addCase(deleteCategoryAction.pending, (state, action) => {
+    // Delete a comment
+    builder.addCase(deleteCommentAction.pending, (state, action) => {
       state.loading = true;
-      state.deletedCategory = null;
       state.isUpdated = false;
     });
-    builder.addCase(deleteCategoryAction.fulfilled, (state, action) => {
+    builder.addCase(deleteCommentAction.fulfilled, (state, action) => {
       state.loading = false;
-      state.deletedCategory = action?.payload;
+      state.comment = action?.payload?.comment;
       state.appErr = null;
       state.serverErr = null;
       state.isUpdated = true;
     });
-    builder.addCase(deleteCategoryAction.rejected, (state, action) => {
+    builder.addCase(deleteCommentAction.rejected, (state, action) => {
       state.loading = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;
       state.isUpdated = false;
     });
 
-    // reset edit
-    builder.addCase(resetCategoryAction, (state, action) => {
-      state.loading = false;
+    // Reset
+    builder.addCase(resetCommentAction, (state) => {
+      state.comment = null;
       state.appErr = null;
       state.serverErr = null;
-      state.updatedCategory = null;
-      state.deletedCategory = null;
+      state.loading = false;
       state.isUpdated = false;
     });
   },
 });
 
-export default categorySlices.reducer;
+export default commentSlices.reducer;

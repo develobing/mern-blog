@@ -14,6 +14,19 @@ const fetchAllComments = asyncHandler(async (req, res, next) => {
 });
 
 /**
+ * @desc Fetch all comments
+ */
+const fetchPostComments = asyncHandler(async (req, res, next) => {
+  const _postId = req.params._postId;
+
+  const comments = await Comment.find({ post: _postId })
+    .sort({ createdAt: -1 })
+    .populate('user');
+
+  res.json({ comments });
+});
+
+/**
  * @desc Fetch a single comment
  */
 const fetchCommentCtrl = asyncHandler(async (req, res, next) => {
@@ -83,6 +96,7 @@ const deleteCommentCtrl = asyncHandler(async (req, res, next) => {
 
 module.exports = {
   fetchAllComments,
+  fetchPostComments,
   fetchCommentCtrl,
   createCommentCtrl,
   updateCommentCtrl,

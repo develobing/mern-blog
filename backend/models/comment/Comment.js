@@ -9,7 +9,8 @@ const CommentSchema = new mongoose.Schema(
     },
 
     user: {
-      type: Object,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: [true, 'Comment author is required'],
     },
 
