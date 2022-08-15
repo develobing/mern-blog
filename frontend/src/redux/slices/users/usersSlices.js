@@ -106,7 +106,7 @@ export const refreshTokenAction = createAsyncThunk(
 // Logout action
 export const logoutAction = createAsyncThunk(
   'users/logout',
-  async (payload, { rejectWithValue, getState, dispatch }) => {
+  async (_, { rejectWithValue, getState, dispatch }) => {
     try {
       // Remove user from localStorage
       localStorage.removeItem('userInfo');
@@ -294,6 +294,73 @@ export const unfollowUserAction = createAsyncThunk(
   }
 );
 
+// Account verification token
+export const verifyTokenAction = createAsyncThunk(
+  'users/verifyToken',
+  async (_, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.post(
+        `${API_HOST}/api/users/verify-token`,
+        null,
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('verifyTokenAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
+// Verify account
+export const verifyAccountAction = createAsyncThunk(
+  'users/verifyAccount',
+  async (verifyToken, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await axios.put(
+        `${API_HOST}/api/users/verify-account`,
+        { token: verifyToken },
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('verifyAccountAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
 // Reset user actions
 export const resetUserAction = createAction('users/reset');
 
@@ -356,6 +423,8 @@ const usersSlices = createSlice({
       state.userAuth = null;
       state.appErr = undefined;
       state.serverErr = undefined;
+      state.isUpdated = false;
+      state.isSentVerifyToken = false;
     });
     builder.addCase(logoutAction.rejected, (state, action) => {
       state.loading = false;
@@ -481,12 +550,51 @@ const usersSlices = createSlice({
       state.isUpdated = false;
     });
 
+    // Verify token
+    builder.addCase(verifyTokenAction.pending, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isSentVerifyToken = false;
+    });
+    builder.addCase(verifyTokenAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isSentVerifyToken = true;
+    });
+    builder.addCase(verifyTokenAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+      state.isSentVerifyToken = false;
+    });
+
+    // Verify token
+    builder.addCase(verifyAccountAction.pending, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+    });
+    builder.addCase(verifyAccountAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      if (state.userAuth) state.userAuth.isAccountVerified = true;
+    });
+    builder.addCase(verifyAccountAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+    });
+
     // Reset user action
     builder.addCase(resetUserAction, (state, action) => {
       state.loading = true;
       state.appErr = undefined;
       state.serverErr = undefined;
       state.isUpdated = false;
+      state.isSentVerifyToken = false;
     });
   },
 });

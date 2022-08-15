@@ -11,7 +11,7 @@ const { authMiddleware } = require('../../middlewares/auth/authMiddleware');
 const router = express.Router();
 
 // Fetch all categories
-router.get('/', authMiddleware, fetchAllCategoriesCtrl);
+router.get('/', fetchAllCategoriesCtrl);
 
 // Fetch a category
 router.get('/:_id', authMiddleware, fetchCategoryCtrl);

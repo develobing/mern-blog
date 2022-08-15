@@ -46,6 +46,7 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
       email: userFound?.email,
       profilePhoto: userFound?.profilePhoto,
       isAdmin: userFound?.isAdmin,
+      isAccountVerified: userFound?.isAccountVerified,
       token: generateToken(userFound?._id),
     });
   } else {
@@ -69,6 +70,7 @@ const refreshTokenCtrl = asyncHandler(async (req, res) => {
     email: userFound?.email,
     profilePhoto: userFound?.profilePhoto,
     isAdmin: userFound?.isAdmin,
+    isAccountVerified: userFound?.isAccountVerified,
     token: generateToken(userFound?._id),
   });
 });
@@ -187,10 +189,7 @@ const followingUserCtrl = asyncHandler(async (req, res) => {
   // 2. Find the user you want to follow and update it's followers field
   await User.findByIdAndUpdate(
     followId,
-    {
-      $addToSet: { followers: loginUserId },
-      isFollowing: true,
-    },
+    { $addToSet: { followers: loginUserId } },
     { new: true }
   );
 
@@ -217,10 +216,7 @@ const unfollowingUserCtrl = asyncHandler(async (req, res) => {
 
   await User.findByIdAndUpdate(
     unfollowId,
-    {
-      $pull: { followers: loginUserId },
-      isFollowing: false,
-    },
+    { $pull: { followers: loginUserId } },
     { new: true }
   );
 
@@ -289,7 +285,7 @@ const generateVerificationTokenCtrl = asyncHandler(async (req, res) => {
   const verifyHtml = `If you were requested to veify your account, verify now within 10 minutes, otherwise ignore this email.<br/><br/> <a href="${verifyURL}">Verify Account</a>`;
 
   const msg = {
-    to: 'develobing@gmail.com',
+    to: loginUser?.email,
     subject: 'Account Verification',
     html: verifyHtml,
   };

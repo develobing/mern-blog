@@ -57,16 +57,6 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    isFollowing: {
-      type: Boolean,
-      default: false,
-    },
-
-    isUnFollowing: {
-      type: Boolean,
-      default: false,
-    },
-
     isAccountVerified: {
       type: Boolean,
       default: false,
