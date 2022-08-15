@@ -16,6 +16,7 @@ import PostDetails from './components/Posts/PostDetails';
 import CreatePost from './components/Posts/CreatePost';
 import UpdatePost from './components/Posts/UpdatePost';
 import UpdateComment from './components/Comments/UpdateComment';
+import SendEmail from './components/Users/SendEmail';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
           path="/upload-profile-photo"
           component={UploadProfilePhoto}
         />
+        <PrivateRoute exact path="/send-email" component={SendEmail} />
 
         <Route exact path="/posts" component={PostsList} />
         <Route exact path="/posts/:_id" component={PostDetails} />

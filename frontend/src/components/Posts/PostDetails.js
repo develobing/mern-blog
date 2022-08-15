@@ -69,7 +69,10 @@ const PostDetails = ({
             </h2>
 
             {/* User */}
-            <div className="inline-flex pt-14 mb-14 items-center border-t border-gray-500">
+            <div
+              className="inline-flex pt-14 mb-14 items-center border-t border-gray-500 cursor-pointer"
+              onClick={() => history.push(`/profile/${post?.user?._id}`)}
+            >
               <img
                 className="mr-8 w-20 lg:w-24 h-20 lg:h-24 rounded-full"
                 src={post?.user?.profilePhoto}

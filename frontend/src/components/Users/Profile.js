@@ -183,7 +183,7 @@ export default function Profile(props) {
 
                             {/* Send Mail */}
                             <Link
-                              // to={`/send-mail?email=${profile?.email}`}
+                              to={`/send-email?_userId=${profile?._id}&email=${profile?.email}`}
                               className="inline-flex justify-center bg-indigo-900 px-4 py-2 border border-yellow-700 shadow-sm text-sm font-medium rounded-md text-gray-700  hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
                             >
                               <MailIcon
