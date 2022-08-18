@@ -89,6 +89,7 @@ const PostDetails = ({
                 </p>
               </div>
             </div>
+
             {/* Post description */}
             <div className="max-w-xl mx-auto">
               <p className="mb-6 text-left  text-xl text-gray-200">

@@ -40,6 +40,8 @@ export default function Profile(props) {
     dispatch(fetchProfileAction(_id));
   };
 
+  const isLoginUser = userAuth?._id === _id;
+
   return (
     <>
       <div className="h-screen flex overflow-hidden bg-white">
@@ -136,36 +138,39 @@ export default function Profile(props) {
 
                           <div className="mt-6 flex flex-col justify-stretch space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
                             {/* // Hide follow button from the same */}
-                            <div>
-                              {profile?.followers?.includes(userAuth?._id) ? (
-                                <button
-                                  onClick={() =>
-                                    dispatch(unfollowUserAction(profile?._id))
-                                  }
-                                  className="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                                >
-                                  <EmojiSadIcon
-                                    className="-ml-1 mr-2 h-5 w-5 text-gray-400"
-                                    aria-hidden="true"
-                                  />
-                                  <span>Unfollow</span>
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() =>
-                                    dispatch(followUserAction(profile?._id))
-                                  }
-                                  type="button"
-                                  className="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                                >
-                                  <HeartIcon
-                                    className="-ml-1 mr-2 h-5 w-5 text-gray-400"
-                                    aria-hidden="true"
-                                  />
-                                  <span>Follow </span>
-                                </button>
-                              )}
-                            </div>
+
+                            {userAuth?._id !== profile?._id && (
+                              <div>
+                                {profile?.followers?.includes(userAuth?._id) ? (
+                                  <button
+                                    onClick={() =>
+                                      dispatch(unfollowUserAction(profile?._id))
+                                    }
+                                    className="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                                  >
+                                    <EmojiSadIcon
+                                      className="-ml-1 mr-2 h-5 w-5 text-gray-400"
+                                      aria-hidden="true"
+                                    />
+                                    <span>Unfollow</span>
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() =>
+                                      dispatch(followUserAction(profile?._id))
+                                    }
+                                    type="button"
+                                    className="inline-flex justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+                                  >
+                                    <HeartIcon
+                                      className="-ml-1 mr-2 h-5 w-5 text-gray-400"
+                                      aria-hidden="true"
+                                    />
+                                    <span>Follow </span>
+                                  </button>
+                                )}
+                              </div>
+                            )}
 
                             {/* Update Profile */}
                             {userAuth?._id === profile?._id && (

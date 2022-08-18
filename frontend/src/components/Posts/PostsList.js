@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { ThumbDownIcon, ThumbUpIcon, EyeIcon } from '@heroicons/react/outline';
 import {
   fetchPostsAction,
@@ -12,8 +12,9 @@ import DateFormatter from '../../utils/DateFormatter';
 import Loading from '../../utils/Loading';
 
 export default function PostsList() {
-  // Fetch post
+  const history = useHistory();
   const dispatch = useDispatch();
+  const { userAuth } = useSelector((state) => state.users);
   const { posts, loading, appErr, serverErr } = useSelector(
     (state) => state.post
   );
@@ -96,7 +97,9 @@ export default function PostsList() {
                 {loading ? (
                   <Loading />
                 ) : appErr || serverErr ? (
-                  <div className="text-red-600">Err</div>
+                  <div className="text-red-600 text-center">
+                    {appErr || serverErr}
+                  </div>
                 ) : posts?.length <= 0 ? (
                   <div className="text-red-600 text-center">No post found</div>
                 ) : (
@@ -122,9 +125,13 @@ export default function PostsList() {
                             <div className="">
                               <ThumbUpIcon
                                 className="h-7 w-7 text-indigo-600 cursor-pointer"
-                                onClick={() =>
-                                  dispatch(addLikesToPostAction(post))
-                                }
+                                onClick={() => {
+                                  if (userAuth?._id) {
+                                    dispatch(addLikesToPostAction(post));
+                                  } else {
+                                    history.push('/login');
+                                  }
+                                }}
                               />
                             </div>
                             <div className="pl-2 text-gray-600">
@@ -136,9 +143,13 @@ export default function PostsList() {
                             <div>
                               <ThumbDownIcon
                                 className="h-7 w-7 cursor-pointer text-gray-600"
-                                onClick={() =>
-                                  dispatch(addDisikesToPostAction(post))
-                                }
+                                onClick={() => {
+                                  if (userAuth?._id) {
+                                    dispatch(addDisikesToPostAction(post));
+                                  } else {
+                                    history.push('/login');
+                                  }
+                                }}
                               />
                             </div>
                             <div className="pl-2 text-gray-600">
