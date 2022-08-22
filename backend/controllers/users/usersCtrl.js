@@ -79,7 +79,7 @@ const refreshTokenCtrl = asyncHandler(async (req, res) => {
  * @desc Fetch all users
  */
 const getAllUsersCtrl = asyncHandler(async (req, res) => {
-  const users = await User.find();
+  const users = await User.find().populate('posts');
   res.json(users);
 });
 
@@ -120,7 +120,16 @@ const userProfileCtrl = asyncHandler(async (req, res) => {
   // Check if user _id is valid
   validateMongodbId(_id);
 
-  const myProfile = await User.findById(_id).populate('posts');
+  const loginUserId = req.user?._id?.toString();
+
+  const myProfile = await User.findByIdAndUpdate(
+    _id,
+    {
+      $addToSet: { viewedBy: loginUserId },
+    },
+    { new: true }
+  ).populate('posts viewedBy');
+
   res.json(myProfile);
 });
 

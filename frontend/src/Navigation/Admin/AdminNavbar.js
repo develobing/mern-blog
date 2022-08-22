@@ -17,7 +17,7 @@ const navigation = [
   { name: 'Home', href: '/', current: true },
   { name: 'Create', href: '/create-post', current: false },
   { name: 'Posts', href: '/posts', current: false },
-  { name: 'Authors', href: '/users', current: false },
+  { name: 'Authors', href: '/authors', current: false },
   { name: 'Add Category', href: '/add-category', current: false },
   { name: 'Categories', href: '/categories', current: false },
 ];

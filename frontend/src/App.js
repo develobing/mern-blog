@@ -10,6 +10,7 @@ import Login from './components/Users/Login';
 import Profile from './components/Users/Profile';
 import UpdateProfile from './components/Users/UpdateProfile';
 import UploadProfilePhoto from './components/Users/UploadProfilePhoto';
+import AuthorsList from './components/Authors/AuthorsList';
 import CategoryList from './components/Categories/CategoryList';
 import AddNewCategory from './components/Categories/AddNewCategory';
 import UpdateCategory from './components/Categories/UpdateCategory';
@@ -68,6 +69,8 @@ function App() {
             path="/verify-account/:verifyToken"
             component={AccountVerified}
           />
+
+          <PrivateRoute exact path="/authors" component={AuthorsList} />
 
           <Route exact path="/posts" component={PostsList} />
           <Route exact path="/posts/:_id" component={PostDetails} />

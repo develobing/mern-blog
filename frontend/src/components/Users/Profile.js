@@ -82,8 +82,15 @@ export default function Profile(props) {
                           <div className="flex flex-col 2xl:block mt-10 min-w-0 flex-1">
                             <h1 className="text-2xl font-bold text-gray-900 ">
                               {profile?.fullName}{' '}
-                              <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                                {profile?.role}
+                              <span
+                                className={`inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium
+                             ${
+                               profile?.accountType === 'pro'
+                                 ? 'bg-red-600 text-white'
+                                 : 'bg-yellow-200 text-yellow-800'
+                             }`}
+                              >
+                                {profile?.accountType}
                               </span>
                               {/* Display if verified or not */}
                               {profile?.isAccountVerified ? (
@@ -218,28 +225,38 @@ export default function Profile(props) {
                   <div className="flex justify-center place-items-start flex-wrap  md:mb-0">
                     <div className="w-full md:w-1/3 px-4 mb-4 md:mb-0">
                       <h1 className="text-center text-xl border-gray-500 mb-2 border-b-2">
-                        Who viewed my profile : 9
+                        Who viewed my profile : {profile?.viewedBy?.length}
                       </h1>
 
                       {/* Who view my post */}
                       <ul className="">
-                        <Link>
-                          <div className="flex mb-2 items-center space-x-4 lg:space-x-6">
-                            <img
-                              className="w-16 h-16 rounded-full lg:w-20 lg:h-20"
-                              // src={user.profilePhoto}
-                              // alt={user?._id}
-                            />
-                            <div className="font-medium text-lg leading-6 space-y-1">
-                              <h3>
-                                {/* {user?.firstName} {user?.lastName} */}Name
-                              </h3>
-                              <p className="text-indigo-600">
-                                {/* {user.accountType} */} Account Type
-                              </p>
-                            </div>
+                        {profile?.viewedBy?.length <= 0 ? (
+                          <div className="p-5 text-center text-gray-500">
+                            <span className="text-xl">
+                              No one has viewed your profile yet
+                            </span>
                           </div>
-                        </Link>
+                        ) : (
+                          profile?.viewedBy?.map((user) => (
+                            <Link to={`/profile/${user?._id}`} key={user?._id}>
+                              <div className="flex mb-2 items-center space-x-4 lg:space-x-6">
+                                <img
+                                  className="w-16 h-16 rounded-full lg:w-20 lg:h-20"
+                                  src={user?.profilePhoto}
+                                  alt={user?._id}
+                                />
+                                <div className="font-medium text-lg leading-6 space-y-1">
+                                  <h3>
+                                    {user?.firstName} {user?.lastName}
+                                  </h3>
+                                  <p className="text-indigo-600">
+                                    {user?.accountType}
+                                  </p>
+                                </div>
+                              </div>
+                            </Link>
+                          ))
+                        )}
                       </ul>
                     </div>
 

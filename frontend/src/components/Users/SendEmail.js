@@ -25,7 +25,7 @@ export default function SendEmail({ location }) {
 
   const query = queryString.parse(location?.search);
   const { _userId, email } = query;
-  if (typeof email !== 'string') history.push('/');
+  // if (typeof email !== 'string') history.push('/');
 
   // formik
   const formik = useFormik({

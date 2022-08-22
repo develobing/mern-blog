@@ -115,9 +115,15 @@ userSchema.virtual('posts', {
   localField: '_id',
 });
 
-// Virtual method to populate created posts
+// Virtual - Full Name
 userSchema.virtual('fullName').get(function () {
   return `${this.firstName} ${this.lastName}`;
+});
+
+// Virtual - Account Type
+userSchema.virtual('accountType').get(function () {
+  const totalFollowers = this.followers?.length;
+  return totalFollowers > 10 ? 'Pro' : 'Starter';
 });
 
 // Hash password

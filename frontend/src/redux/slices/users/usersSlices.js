@@ -122,6 +122,36 @@ export const logoutAction = createAsyncThunk(
   }
 );
 
+// Fetch all users action
+export const fetchUsersAction = createAsyncThunk(
+  'users/fetchAll',
+  async (_, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.get(`${API_HOST}/api/users`, config);
+
+      return data;
+    } catch (err) {
+      console.log('fetchUsersAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
 // Profile action
 export const fetchProfileAction = createAsyncThunk(
   'users/profile',
@@ -361,6 +391,72 @@ export const verifyAccountAction = createAsyncThunk(
   }
 );
 
+// Block a user
+export const blockUserAction = createAsyncThunk(
+  'users/blockUser',
+  async (_userId, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.put(
+        `${API_HOST}/api/users/block/${_userId}`,
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('blockUserAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
+// Unblock a user
+export const unblockUserAction = createAsyncThunk(
+  'users/unblockUser',
+  async (_userId, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.put(
+        `${API_HOST}/api/users/unblock/${_userId}`,
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('unblockUserAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
 // Reset user actions
 export const resetUserAction = createAction('users/reset');
 
@@ -445,6 +541,24 @@ const usersSlices = createSlice({
       state.serverErr = undefined;
     });
     builder.addCase(refreshTokenAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+    });
+
+    // Fetch all users
+    builder.addCase(fetchUsersAction.pending, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+    });
+    builder.addCase(fetchUsersAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.users = action?.payload;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+    });
+    builder.addCase(fetchUsersAction.rejected, (state, action) => {
       state.loading = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;
@@ -570,7 +684,7 @@ const usersSlices = createSlice({
       state.isSentVerifyToken = false;
     });
 
-    // Verify token
+    // Verify account
     builder.addCase(verifyAccountAction.pending, (state, action) => {
       state.loading = true;
       state.appErr = undefined;
@@ -583,6 +697,40 @@ const usersSlices = createSlice({
       if (state.userAuth) state.userAuth.isAccountVerified = true;
     });
     builder.addCase(verifyAccountAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+    });
+
+    // Block a user
+    builder.addCase(blockUserAction.pending, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+    });
+    builder.addCase(blockUserAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+    });
+    builder.addCase(blockUserAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+    });
+
+    // Unblock a user
+    builder.addCase(unblockUserAction.pending, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+    });
+    builder.addCase(unblockUserAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+    });
+    builder.addCase(unblockUserAction.rejected, (state, action) => {
       state.loading = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;
