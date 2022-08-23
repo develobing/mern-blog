@@ -41,4 +41,11 @@ const checkMyToken = asyncHandler(async (req, res, next) => {
   else throw new Error('You are not authorized to update this user');
 });
 
-module.exports = { authMiddleware, checkMyToken };
+const checkBlockUser = asyncHandler(async (req, res, next) => {
+  const loginUser = req?.user;
+  const { email, isBlocked } = loginUser;
+  if (isBlocked) throw new Error(`Access Denied: User [${email}] is blocked`);
+  else next();
+});
+
+module.exports = { authMiddleware, checkMyToken, checkBlockUser };

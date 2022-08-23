@@ -8,7 +8,10 @@ const {
   toggleLikePostCtrl,
   toggleDislikePostCtrl,
 } = require('../../controllers/posts/postCtrl');
-const { authMiddleware } = require('../../middlewares/auth/authMiddleware');
+const {
+  authMiddleware,
+  checkBlockUser,
+} = require('../../middlewares/auth/authMiddleware');
 const {
   photoUpload,
   postPhotoResize,
@@ -26,18 +29,19 @@ router.get('/:_id', fetchPostCtrl);
 router.post(
   '/',
   authMiddleware,
+  checkBlockUser,
   photoUpload.single('image'),
   postPhotoResize,
   createPostCtrl
 );
 
 // Update a post
-router.put('/:_id', authMiddleware, updatePost);
+router.put('/:_id', authMiddleware, checkBlockUser, updatePost);
 
 // Like a post
 router.put('/:_id/likes', authMiddleware, toggleLikePostCtrl);
 
-// Like a post
+// Dislike a post
 router.put('/:_id/dislikes', authMiddleware, toggleDislikePostCtrl);
 
 // Delete a post

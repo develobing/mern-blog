@@ -36,11 +36,6 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Password is required'],
     },
 
-    postCount: {
-      type: Number,
-      default: 0,
-    },
-
     role: {
       type: String,
       enum: ['Admin', 'Guest', 'Blogger'],
@@ -113,6 +108,12 @@ userSchema.virtual('posts', {
   ref: 'Post',
   foreignField: 'user',
   localField: '_id',
+});
+
+// Virtual - Post Count
+userSchema.virtual('postCount').get(function () {
+  const postCount = this.posts?.length || 0;
+  return postCount;
 });
 
 // Virtual - Full Name

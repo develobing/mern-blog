@@ -21,7 +21,8 @@ const userRegisterCtrl = asyncHandler(async (req, res) => {
       password,
     });
 
-    res.json(user);
+    const userAuth = getUserAuth(user);
+    res.json(userAuth);
   } catch (err) {
     if (err?.code === 11000) throw new Error('User already exists');
     else throw err;
@@ -39,16 +40,11 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
 
   // Check if password is mached
   if (userFound && (await userFound.isPasswordMatched(password))) {
-    res.json({
-      _id: userFound?._id,
-      firstName: userFound?.firstName,
-      lastName: userFound?.lastName,
-      email: userFound?.email,
-      profilePhoto: userFound?.profilePhoto,
-      isAdmin: userFound?.isAdmin,
-      isAccountVerified: userFound?.isAccountVerified,
-      token: generateToken(userFound?._id),
-    });
+    // Check if user is blocked
+    checkBlockUser(userFound);
+
+    const userAuth = getUserAuth(userFound);
+    res.json(userAuth);
   } else {
     res.status(401).json({ message: 'Invalid Credentials' });
   }
@@ -63,16 +59,11 @@ const refreshTokenCtrl = asyncHandler(async (req, res) => {
   // Check if user exists
   const userFound = await User.findById(_userId);
 
-  res.json({
-    _id: userFound?._id,
-    firstName: userFound?.firstName,
-    lastName: userFound?.lastName,
-    email: userFound?.email,
-    profilePhoto: userFound?.profilePhoto,
-    isAdmin: userFound?.isAdmin,
-    isAccountVerified: userFound?.isAccountVerified,
-    token: generateToken(userFound?._id),
-  });
+  // Check if user is blocked
+  checkBlockUser(userFound);
+
+  const userAuth = getUserAuth(userFound);
+  res.json(userAuth);
 });
 
 /**
@@ -416,6 +407,24 @@ const profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
   // Remove upload image from local server
   fs.unlinkSync(localPath);
 });
+
+function getUserAuth(user) {
+  return {
+    _id: user?._id,
+    firstName: user?.firstName,
+    lastName: user?.lastName,
+    email: user?.email,
+    profilePhoto: user?.profilePhoto,
+    isAdmin: user?.isAdmin,
+    isAccountVerified: user?.isAccountVerified,
+    token: generateToken(user?._id),
+  };
+}
+
+function checkBlockUser(user) {
+  const { email, isBlocked } = user;
+  if (isBlocked) throw new Error(`Access Denied: User [${email}] is blocked`);
+}
 
 module.exports = {
   userRegisterCtrl,

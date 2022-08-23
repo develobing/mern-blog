@@ -22,6 +22,7 @@ const {
 const {
   authMiddleware,
   checkMyToken,
+  checkBlockUser,
 } = require('../../middlewares/auth/authMiddleware');
 const {
   photoUpload,
@@ -52,6 +53,7 @@ router.get('/profile/:_id', authMiddleware, userProfileCtrl);
 router.put(
   '/profile-photo',
   authMiddleware,
+  checkBlockUser,
   photoUpload.single('image'),
   profilePhotoResize,
   profilePhotoUploadCtrl
@@ -76,7 +78,13 @@ router.put('/follow', authMiddleware, followingUserCtrl);
 router.put('/unfollow', authMiddleware, unfollowingUserCtrl);
 
 // User update
-router.put('/:_id', authMiddleware, checkMyToken, updateUserCtrl);
+router.put(
+  '/:_id',
+  authMiddleware,
+  checkMyToken,
+  checkBlockUser,
+  updateUserCtrl
+);
 
 // User password update
 router.put(
