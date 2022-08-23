@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import { MailIcon } from '@heroicons/react/solid';
@@ -36,7 +36,10 @@ const AuthorsListItem = (user) => {
           <div className="w-1/2 lg:w-2/12 px-4 mb-6 lg:mb-0">
             <p className="py-1 px-2 text-xs text-purple-500 bg-purple-50 rounded-full">
               {user?.user?.accountType}
-              <span>{user?.user?.isBlocked && 'Blocked'}</span>
+
+              <span className="ml-2 text-red-600 font-semibold">
+                {user?.user?.isBlocked && 'Blocked'}
+              </span>
             </p>
           </div>
           <div className="w-1/2 lg:w-2/12 px-4 mb-6 lg:mb-0">

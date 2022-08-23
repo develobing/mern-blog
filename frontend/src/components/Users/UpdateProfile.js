@@ -69,18 +69,14 @@ const UpdateProfile = () => {
         </h3>
 
         {/* Display err here */}
-        {appErr ||
-          (serverErr && (
-            <div className="flex items-center justify-center min-w-0 flex-1 bg-gray-300">
-              <div className="text-red-500 text-2xl">
-                {appErr ? appErr : serverErr}
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              </div>
-            </div>
-          ))}
+        {(appErr || serverErr) && (
+          <div className="flex items-center justify-center min-w-0 flex-1 mt-3 bg-gray-300">
+            <div className="text-red-500">{appErr ? appErr : serverErr}</div>
+          </div>
+        )}
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={formik.handleSubmit}>
             <div>

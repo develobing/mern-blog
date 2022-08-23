@@ -2,18 +2,23 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AuthorsListHeader from './AuthorsListHeader';
 import AuthorsListItem from './AuthorsListItem';
-import { fetchUsersAction } from '../../redux/slices/users/usersSlices';
+import {
+  fetchUsersAction,
+  resetUserAction,
+} from '../../redux/slices/users/usersSlices';
 import Loading from '../../utils/Loading';
 
 const AuthorsList = () => {
   const dispatch = useDispatch();
-  const { users, appErr, serverErr, loading } = useSelector(
+  const { users, appErr, serverErr, loading, isUpdated } = useSelector(
     (state) => state.users
   );
 
   useEffect(() => {
     dispatch(fetchUsersAction());
-  }, []);
+
+    if (isUpdated) dispatch(resetUserAction());
+  }, [isUpdated]);
 
   return (
     <>

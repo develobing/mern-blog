@@ -81,11 +81,6 @@ export default function AddComment({ postId }) {
         </button>
       </form>
 
-      {/* Error message */}
-      {(appErr || serverErr) && (
-        <div className="text-red-400 mb-2 mt-2">{appErr || serverErr}</div>
-      )}
-
       <div className="text-red-400 mb-2 mt-2">
         {formik.touched.description && formik.errors.description}
       </div>

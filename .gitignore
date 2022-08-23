@@ -10,3 +10,6 @@ build
 
 # environment variables
 .env
+
+# etc
+.vscode

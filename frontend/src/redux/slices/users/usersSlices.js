@@ -20,6 +20,9 @@ export const registerUserAction = createAsyncThunk(
         config
       );
 
+      // Save user into localStorage
+      localStorage.setItem('userInfo', JSON.stringify(data));
+
       return data;
     } catch (err) {
       console.log('registerUserAction() - err', err);
@@ -93,6 +96,7 @@ export const refreshTokenAction = createAsyncThunk(
       return data;
     } catch (err) {
       console.log('refreshToken() - err', err);
+      dispatch(logoutAction());
 
       if (!err?.response) {
         throw err;
@@ -408,6 +412,7 @@ export const blockUserAction = createAsyncThunk(
 
       const { data } = await axios.put(
         `${API_HOST}/api/users/block/${_userId}`,
+        null,
         config
       );
 
@@ -441,6 +446,7 @@ export const unblockUserAction = createAsyncThunk(
 
       const { data } = await axios.put(
         `${API_HOST}/api/users/unblock/${_userId}`,
+        null,
         config
       );
 
@@ -480,7 +486,7 @@ const usersSlices = createSlice({
     });
     builder.addCase(registerUserAction.fulfilled, (state, action) => {
       state.loading = false;
-      state.registered = action?.payload;
+      state.userAuth = action?.payload;
       state.appErr = undefined;
       state.serverErr = undefined;
     });
@@ -705,16 +711,19 @@ const usersSlices = createSlice({
     // Block a user
     builder.addCase(blockUserAction.pending, (state, action) => {
       state.loading = true;
+      state.isUpdated = false;
       state.appErr = undefined;
       state.serverErr = undefined;
     });
     builder.addCase(blockUserAction.fulfilled, (state, action) => {
       state.loading = false;
+      state.isUpdated = true;
       state.appErr = undefined;
       state.serverErr = undefined;
     });
     builder.addCase(blockUserAction.rejected, (state, action) => {
       state.loading = false;
+      state.isUpdated = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;
     });
@@ -722,16 +731,19 @@ const usersSlices = createSlice({
     // Unblock a user
     builder.addCase(unblockUserAction.pending, (state, action) => {
       state.loading = true;
+      state.isUpdated = false;
       state.appErr = undefined;
       state.serverErr = undefined;
     });
     builder.addCase(unblockUserAction.fulfilled, (state, action) => {
       state.loading = false;
+      state.isUpdated = true;
       state.appErr = undefined;
       state.serverErr = undefined;
     });
     builder.addCase(unblockUserAction.rejected, (state, action) => {
       state.loading = false;
+      state.isUpdated = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;
     });

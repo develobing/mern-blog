@@ -17,7 +17,7 @@ const formSchema = Yup.object().shape({
 
 const Register = () => {
   const dispatch = useDispatch();
-  const { registered, loading, serverErr, appErr } = useSelector(
+  const { userAuth, loading, serverErr, appErr } = useSelector(
     (state) => state.users
   );
 
@@ -41,8 +41,8 @@ const Register = () => {
   });
 
   // redirect if user is registered
-  if (registered) {
-    return <Redirect to="/profile" />;
+  if (userAuth) {
+    return <Redirect to={`/profile/${userAuth?._id}`} />;
   }
 
   return (
