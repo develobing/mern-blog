@@ -7,6 +7,8 @@ import Navbar from './Navigation/Navbar';
 import Home from './components/Home/Home';
 import Register from './components/Users/Register';
 import Login from './components/Users/Login';
+import ForgetPassword from './components/Users/ForgetPassword';
+import ResetPassword from './components/Users/ResetPassword';
 import Profile from './components/Users/Profile';
 import UpdatePassword from './components/Users/UpdatePassword';
 import UpdateProfile from './components/Users/UpdateProfile';
@@ -24,6 +26,8 @@ import SendEmail from './components/Users/SendEmail';
 import AccountVerified from './components/Users/AccountVerified';
 import { refreshTokenAction } from './redux/slices/users/usersSlices';
 import Loading from './utils/Loading';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const dispatch = useDispatch();
@@ -45,6 +49,7 @@ function App() {
   return (
     <Router>
       <Navbar />
+      <ToastContainer />
 
       {!isLoaded ? (
         <Loading />
@@ -53,6 +58,12 @@ function App() {
           <Route exact path="/" component={Home} />
           <Route exact path="/register" component={Register} />
           <Route exact path="/login" component={Login} />
+          <Route exact path="/forget-password" component={ForgetPassword} />
+          <Route
+            exact
+            path="/reset-password/:passwordToken"
+            component={ResetPassword}
+          />
           <PrivateRoute exact path="/profile/:_id" component={Profile} />
           <PrivateRoute
             exact

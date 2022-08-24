@@ -341,7 +341,7 @@ const forgetPasswordTokenCtrl = asyncHandler(async (req, res) => {
   const resetHtml = `If you were requested to reset your password, reset now within 10 minutes, otherwise ignore this email.<br/><br/> <a href="${resetURL}">Reset Password</a>`;
 
   const msg = {
-    to: 'develobing@gmail.com',
+    to: email,
     subject: 'Reset your password',
     html: resetHtml,
   };

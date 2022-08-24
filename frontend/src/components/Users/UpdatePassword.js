@@ -39,13 +39,6 @@ export default function UpdatePassword() {
     validationSchema: formSchema,
   });
 
-  // useEffect(() => {
-  //   if (isUpdated) {
-  //     history.push('/categories');
-  //     dispatch(resetCategoryAction());
-  //   }
-  // }, [isUpdated]);
-
   useEffect(() => {
     if (isUpdated) {
       history.push(`/profile/${userAuth?._id}`);

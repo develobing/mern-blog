@@ -429,6 +429,73 @@ export const verifyAccountAction = createAsyncThunk(
   }
 );
 
+// Password token
+export const passwordTokenAction = createAsyncThunk(
+  'users/forget-password',
+  async (email, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.post(
+        `${API_HOST}/api/users/forget-password`,
+        { email },
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('passwordTokenAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
+// Password reset
+export const passwordResetAction = createAsyncThunk(
+  'users/reset-password',
+  async (passwordInfo, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await axios.put(
+        `${API_HOST}/api/users/reset-password`,
+        passwordInfo,
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('passwordResetAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
 // Block a user
 export const blockUserAction = createAsyncThunk(
   'users/blockUser',
@@ -762,6 +829,46 @@ const usersSlices = createSlice({
       state.serverErr = action?.error?.message;
     });
 
+    // Password token
+    builder.addCase(passwordTokenAction.pending, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isUpdated = false;
+    });
+    builder.addCase(passwordTokenAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isUpdated = true;
+    });
+    builder.addCase(passwordTokenAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+      state.isUpdated = false;
+    });
+
+    // Password reset
+    builder.addCase(passwordResetAction.pending, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isUpdated = false;
+    });
+    builder.addCase(passwordResetAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isUpdated = true;
+    });
+    builder.addCase(passwordResetAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+      state.isUpdated = false;
+    });
+
     // Block a user
     builder.addCase(blockUserAction.pending, (state, action) => {
       state.loading = true;
@@ -804,7 +911,7 @@ const usersSlices = createSlice({
 
     // Reset user action
     builder.addCase(resetUserAction, (state, action) => {
-      state.loading = true;
+      state.loading = false;
       state.appErr = undefined;
       state.serverErr = undefined;
       state.isUpdated = false;
