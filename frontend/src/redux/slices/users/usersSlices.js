@@ -189,6 +189,40 @@ export const fetchProfileAction = createAsyncThunk(
   }
 );
 
+// Update Password
+export const updatePasswordAction = createAsyncThunk(
+  'users/updatePassword',
+  async (user, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const state = getState();
+      const { userAuth } = state.users || {};
+      const token = userAuth?.token;
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.put(
+        `${API_HOST}/api/users/password/${user?._userId}`,
+        { password: user?.password },
+        config
+      );
+
+      return data;
+    } catch (err) {
+      console.log('updatePasswordAction() - err', err);
+
+      if (!err?.response) {
+        throw err;
+      } else {
+        return rejectWithValue(err?.response?.data);
+      }
+    }
+  }
+);
+
 // Update Profile
 export const updateProfileAction = createAsyncThunk(
   'users/updateProfile',
@@ -586,6 +620,26 @@ const usersSlices = createSlice({
       state.loading = false;
       state.appErr = action?.payload?.message;
       state.serverErr = action?.error?.message;
+    });
+
+    // Update password
+    builder.addCase(updatePasswordAction.pending, (state, action) => {
+      state.loading = true;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isUpdated = false;
+    });
+    builder.addCase(updatePasswordAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.appErr = undefined;
+      state.serverErr = undefined;
+      state.isUpdated = true;
+    });
+    builder.addCase(updatePasswordAction.rejected, (state, action) => {
+      state.loading = false;
+      state.appErr = action?.payload?.message;
+      state.serverErr = action?.error?.message;
+      state.isUpdated = false;
     });
 
     // Update profile

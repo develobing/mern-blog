@@ -8,6 +8,7 @@ import Home from './components/Home/Home';
 import Register from './components/Users/Register';
 import Login from './components/Users/Login';
 import Profile from './components/Users/Profile';
+import UpdatePassword from './components/Users/UpdatePassword';
 import UpdateProfile from './components/Users/UpdateProfile';
 import UploadProfilePhoto from './components/Users/UploadProfilePhoto';
 import AuthorsList from './components/Authors/AuthorsList';
@@ -53,6 +54,11 @@ function App() {
           <Route exact path="/register" component={Register} />
           <Route exact path="/login" component={Login} />
           <PrivateRoute exact path="/profile/:_id" component={Profile} />
+          <PrivateRoute
+            exact
+            path="/update-password"
+            component={UpdatePassword}
+          />
           <PrivateRoute
             exact
             path="/update-profile"
